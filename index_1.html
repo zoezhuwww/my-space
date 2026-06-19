@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="小钰の空間">
+<meta name="theme-color" content="#C49A7A">
+<title>小钰の空間</title>
+<link rel="manifest" id="manifest-link">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#FFF5EE;--bg2:#FAF2EB;--card:#FFFFFF;--card-shadow:0 2px 16px rgba(196,154,122,0.1);
+  --accent:#C49A7A;--accent-light:#E8D5C4;--accent-hover:#B38A6A;
+  --text:#3D2E1F;--muted:#8B7D6B;--border:#E8DDD3;
+  --success:#7CAE7A;--danger:#D4726A;--soft:#F5EBE3;
+  --pink:#F4ACB7;--lavender:#C9B8DB;--mint:#A8D8C8;--sky:#A8C8E8;
+  --nav-bg:rgba(255,255,255,0.85);--nav-border:rgba(232,221,211,0.8);
+  --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
+  --float1:#F4ACB7;--float2:#C9B8DB;--float3:#E8D5C4;--float4:#A8D8C8;
+}
+.dark {
+  --bg:#1E1A2E;--bg2:#252040;--card:#2D2845;--card-shadow:0 2px 16px rgba(0,0,0,0.25);
+  --accent:#D4A982;--accent-light:#3D3555;--accent-hover:#E0BA95;
+  --text:#E8DDD3;--muted:#8B8099;--border:#3D3555;
+  --success:#7CAE7A;--danger:#D4726A;--soft:#2D2845;
+  --pink:#C4788A;--lavender:#9988BB;--mint:#6BA894;--sky:#7BA0C0;
+  --nav-bg:rgba(30,26,46,0.9);--nav-border:rgba(61,53,85,0.8);
+  --float1:rgba(244,172,183,0.15);--float2:rgba(201,184,219,0.15);--float3:rgba(232,213,196,0.15);--float4:rgba(168,216,200,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Quicksand','Noto Sans SC',sans-serif;background:linear-gradient(160deg,var(--bg),var(--bg2));
+  color:var(--text);overflow:hidden;height:100dvh;display:flex;flex-direction:column;transition:background .4s,color .4s}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:inherit}
+
+/* ── Floating Decorations ── */
+.floats{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.float{position:absolute;border-radius:50%;opacity:.5;animation:floaty linear infinite}
+.float:nth-child(1){width:120px;height:120px;background:var(--float1);top:10%;left:-30px;animation-duration:18s}
+.float:nth-child(2){width:80px;height:80px;background:var(--float2);top:40%;right:-20px;animation-duration:22s;animation-delay:-5s}
+.float:nth-child(3){width:60px;height:60px;background:var(--float3);bottom:20%;left:20%;animation-duration:15s;animation-delay:-8s}
+.float:nth-child(4){width:100px;height:100px;background:var(--float4);top:60%;right:30%;animation-duration:20s;animation-delay:-3s}
+.float:nth-child(5){width:40px;height:40px;background:var(--float1);top:80%;left:60%;animation-duration:16s;animation-delay:-10s}
+@keyframes floaty{
+  0%{transform:translateY(0) rotate(0deg) scale(1)}
+  25%{transform:translateY(-30px) rotate(90deg) scale(1.1)}
+  50%{transform:translateY(10px) rotate(180deg) scale(0.95)}
+  75%{transform:translateY(-20px) rotate(270deg) scale(1.05)}
+  100%{transform:translateY(0) rotate(360deg) scale(1)}
+}
+
+/* ── Header ── */
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;
+  padding-top:calc(14px + env(safe-area-inset-top,0px));flex-shrink:0;position:relative;z-index:10}
+.header h1{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+.header-btns{display:flex;gap:6px}
+.header-btn{background:var(--card);border:1.5px solid var(--border);width:36px;height:36px;border-radius:12px;
+  font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .3s;
+  box-shadow:var(--card-shadow)}
+.header-btn:active{transform:scale(0.9)}
+
+/* ── Main ── */
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 16px;-webkit-overflow-scrolling:touch;
+  position:relative;z-index:1}
+
+/* ── Page Transition ── */
+.page-enter{animation:pageIn .35s ease both}
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── Bottom Nav ── */
+.nav{display:flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--nav-border);flex-shrink:0;padding-bottom:var(--safe-b);
+  position:relative;z-index:10}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;
+  background:none;border:none;font-size:10px;color:var(--muted);transition:all .25s;font-weight:600}
+.nav-btn.active{color:var(--accent)}
+.nav-btn .icon{font-size:20px;line-height:1;transition:transform .2s}
+.nav-btn.active .icon{transform:scale(1.15)}
+.nav-btn:active .icon{transform:scale(0.85)}
+
+/* ── Cards ── */
+.card{background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--border);
+  margin-bottom:12px;box-shadow:var(--card-shadow);transition:all .3s;position:relative;overflow:hidden}
+.card:active{transform:scale(0.985)}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+
+/* ── Countdown Cards ── */
+.cd-card{padding:16px;border-radius:18px;position:relative;overflow:hidden;border:1px solid var(--border);
+  box-shadow:var(--card-shadow);transition:all .3s}
+.cd-card:active{transform:scale(0.97)}
+.cd-card .deco{position:absolute;pointer-events:none}
+.cd-love{background:linear-gradient(135deg,#FFF0F3,#FFE4EC);border-color:#F8D7DE}
+.dark .cd-love{background:linear-gradient(135deg,#2D1F2B,#35253A);border-color:#3D2535}
+.cd-japan{background:linear-gradient(135deg,#EEF4FF,#E8F0FE);border-color:#D0DFEF}
+.dark .cd-japan{background:linear-gradient(135deg,#1E2235,#222840);border-color:#2A3050}
+.cd-tag{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.cd-days{font-size:34px;font-weight:800;line-height:1.2}
+.cd-sub{font-size:11px;color:var(--muted);margin-top:2px;font-weight:600}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;
+  border-radius:12px;border:none;font-size:14px;font-weight:700;transition:all .25s;letter-spacing:0.3px}
+.btn:active{transform:scale(0.95)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:var(--accent-light);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:10px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── Inputs ── */
+.input{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);
+  background:var(--bg);color:var(--text);font-size:14px;outline:none;transition:all .25s;font-weight:500}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(196,154,122,0.12)}
+textarea.input{resize:none;min-height:60px}
+
+/* ── Mood ── */
+.mood-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.mood-chip{font-size:26px;padding:6px 8px;border-radius:14px;border:2.5px solid transparent;
+  background:none;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:1px}
+.mood-chip span{font-size:10px;color:var(--muted);font-weight:600}
+.mood-chip.active{border-color:var(--accent);background:var(--soft);transform:scale(1.1)}
+.mood-chip:active{transform:scale(0.9)}
+
+/* ── Todo ── */
+.todo-item{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.todo-check{width:24px;height:24px;border-radius:8px;border:2.5px solid var(--accent);background:none;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;transition:all .25s}
+.todo-check.done{background:var(--success);border-color:var(--success)}
+.todo-check:active{transform:scale(0.85)}
+.todo-text{flex:1;font-size:14px;font-weight:500}
+.todo-text.done{text-decoration:line-through;color:var(--muted)}
+.todo-del{background:none;border:none;color:var(--muted);font-size:16px;padding:4px;transition:all .2s}
+.todo-del:active{transform:scale(0.8);color:var(--danger)}
+
+/* ── Vocab ── */
+.vocab-item{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.vocab-star{background:none;border:none;font-size:16px;padding:2px;transition:transform .2s}
+.vocab-star:active{transform:scale(1.3)}
+.vocab-ja{font-size:15px;font-weight:700}
+.vocab-zh{font-size:14px;color:var(--muted);margin-left:8px;font-weight:500}
+.flashcard{width:100%;max-width:320px;height:180px;margin:0 auto;border-radius:22px;
+  border:2.5px solid var(--accent);background:var(--card);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 24px rgba(196,154,122,0.15);
+  transition:all .3s}
+.flashcard:active{transform:scale(0.97) rotateY(5deg)}
+
+/* ── Chat ── */
+.chat-area{flex:1;overflow-y:auto;padding:10px;background:var(--bg);border-radius:16px;
+  border:1px solid var(--border);margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.chat-msg{display:flex;margin-bottom:10px}
+.chat-msg.user{justify-content:flex-end}
+.chat-msg.assistant{justify-content:flex-start}
+.chat-bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.6;
+  white-space:pre-wrap;font-weight:500;transition:all .3s}
+.chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.chat-msg.assistant .chat-bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.chat-input-row{display:flex;gap:8px;flex-shrink:0}
+
+/* ── Chat Sessions ── */
+.sess-bar{display:flex;gap:6px;overflow-x:auto;flex-shrink:0;padding-bottom:8px;margin-bottom:4px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sess-bar::-webkit-scrollbar{display:none}
+.sess-tab{flex-shrink:0;padding:6px 14px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--card);font-size:12px;font-weight:700;color:var(--muted);transition:all .25s;
+  display:flex;align-items:center;gap:4px;white-space:nowrap;max-width:120px}
+.sess-tab.active{border-color:var(--accent);color:var(--accent);background:var(--soft)}
+.sess-tab:active{transform:scale(0.93)}
+.sess-tab .sess-name{overflow:hidden;text-overflow:ellipsis}
+.sess-add{flex-shrink:0;width:32px;height:32px;border-radius:10px;border:1.5px dashed var(--border);
+  background:none;font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center;
+  transition:all .25s}
+.sess-add:active{transform:scale(0.9);border-color:var(--accent);color:var(--accent)}
+.sess-actions{display:flex;gap:4px;flex-shrink:0}
+.sess-act-btn{padding:4px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);
+  font-size:11px;font-weight:600;color:var(--muted);transition:all .2s}
+.sess-act-btn:active{transform:scale(0.9)}
+
+/* ── Settings ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:100;opacity:0;pointer-events:none;
+  transition:opacity .3s;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.overlay.show{opacity:1;pointer-events:auto}
+.settings-panel{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;
+  z-index:101;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,.37,1.02);
+  max-height:85dvh;display:flex;flex-direction:column;padding-bottom:var(--safe-b)}
+.settings-panel.show{transform:translateY(0)}
+.settings-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
+  border-bottom:1px solid var(--border);flex-shrink:0}
+.settings-header h2{font-size:17px;font-weight:800}
+.settings-body{overflow-y:auto;padding:16px 20px;flex:1;-webkit-overflow-scrolling:touch}
+.setting-group{margin-bottom:18px}
+.setting-label{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.setting-row{display:flex;gap:8px;margin-bottom:8px}
+
+/* ── Memory items ── */
+.mem-item{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:13px;font-weight:500}
+.mem-item .dot{color:var(--accent)}
+.mem-item .del{background:none;border:none;color:var(--muted);font-size:14px;padding:2px;cursor:pointer}
+
+/* ── Utility ── */
+.sec-title{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px}
+.page-title{font-size:22px;font-weight:800;margin-bottom:16px;letter-spacing:-0.5px}
+.tab-row{display:flex;gap:6px}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:14px;font-weight:500}
+.row{display:flex;gap:8px}
+.mb-12{margin-bottom:12px}
+.stat-val{font-size:26px;font-weight:800;color:var(--accent);line-height:1.2}
+.stat-label{font-size:12px;color:var(--muted);font-weight:600}
+.progress-bar{height:5px;border-radius:3px;background:var(--accent-light);overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .5s ease}
+.diary-entry{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
+.diary-entry:last-child{border-bottom:none}
+.diary-del{background:none;border:none;color:var(--danger);font-size:11px;cursor:pointer;padding:0;margin-top:4px;font-weight:600}
+.chat-page{display:flex;flex-direction:column;height:100%}
+
+/* ── Sparkle animation ── */
+@keyframes sparkle{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.sparkle{animation:sparkle 2s ease-in-out infinite}
+.sparkle-d1{animation-delay:0s}
+.sparkle-d2{animation-delay:.5s}
+.sparkle-d3{animation-delay:1s}
+.sparkle-d4{animation-delay:1.5s}
+
+/* ── Sakura fall ── */
+@keyframes sakuraFall{
+  0%{transform:translateY(-10px) rotate(0deg);opacity:0}
+  10%{opacity:.7}
+  100%{transform:translateY(140px) rotate(360deg) translateX(20px);opacity:0}
+}
+.sakura{animation:sakuraFall 4s ease-in infinite}
+</style>
+</head>
+<body>
+
+<div class="floats">
+  <div class="float"></div><div class="float"></div><div class="float"></div>
+  <div class="float"></div><div class="float"></div>
+</div>
+
+<div class="header">
+  <h1>✦ 小钰の空間</h1>
+  <div class="header-btns">
+    <button class="header-btn" onclick="toggleDark()" id="dark-btn">🌙</button>
+    <button class="header-btn" onclick="toggleSettings()">⚙️</button>
+  </div>
+</div>
+
+<div class="main" id="content"></div>
+
+<nav class="nav" id="nav"></nav>
+
+<div class="overlay" id="overlay" onclick="toggleSettings()"></div>
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-header">
+    <h2>⚙️ 设置</h2>
+    <button class="header-btn" onclick="toggleSettings()" style="border:none;background:none;box-shadow:none;font-size:20px">✕</button>
+  </div>
+  <div class="settings-body" id="settingsBody"></div>
+</div>
+
+<script>
+// ━━━━━━━━━━ DATA ━━━━━━━━━━
+const store = {
+  get(k, fb) { try { const v = localStorage.getItem('zoe-'+k); return v ? JSON.parse(v) : fb; } catch { return fb; } },
+  set(k, v) { try { localStorage.setItem('zoe-'+k, JSON.stringify(v)); } catch {} },
+};
+
+let diary = store.get('diary', []);
+let todos = store.get('todos', []);
+let words = store.get('vocab', []);
+let memories = store.get('memories', []);
+let chatSessions = store.get('chatSessions', [{id:1,name:'新对话 1',msgs:[],ts:Date.now()}]);
+let curSessId = store.get('chatSessId', 1);
+function curSess(){return chatSessions.find(s=>s.id===curSessId)||chatSessions[0]}
+let isDark = store.get('dark', false);
+let apiConfig = store.get('api', {
+  provider:'none', url:'', key:'', model:'',
+  sysPrompt:'你是小钰的私人AI助手。你温柔、有趣、记忆力很好。用中文回复，语气亲切自然，可以用颜文字但不要用😏或😂。回复简洁有用。',
+});
+let apiUsage = store.get('apiUsage', {total:{in:0,out:0,reqs:0},daily:{}});
+
+function saveDiary(){store.set('diary',diary)} function saveTodos(){store.set('todos',todos)}
+function saveWords(){store.set('vocab',words)} function saveMemories(){store.set('memories',memories)}
+function saveChat(){store.set('chatSessions',chatSessions.map(s=>({...s,msgs:s.msgs.slice(-50)})));store.set('chatSessId',curSessId)} function saveApi(){store.set('api',apiConfig)}
+function saveUsage(){store.set('apiUsage',apiUsage)}
+function trackUsage(inTok,outTok){
+  const today=fmtDate(new Date());
+  apiUsage.total.in+=inTok;apiUsage.total.out+=outTok;apiUsage.total.reqs++;
+  if(!apiUsage.daily[today])apiUsage.daily[today]={in:0,out:0,reqs:0};
+  apiUsage.daily[today].in+=inTok;apiUsage.daily[today].out+=outTok;apiUsage.daily[today].reqs++;
+  saveUsage();
+}
+function estimateCost(){
+  const p=apiConfig.provider;const i=apiUsage.total.in,o=apiUsage.total.out;
+  if(p==='anthropic')return((i*3+o*15)/1e6).toFixed(3);
+  if(p==='deepseek')return((i*1+o*2)/1e6).toFixed(3);
+  if(p==='openai')return((i*0.15+o*0.6)/1e6).toFixed(4);
+  return((i*3+o*10)/1e6).toFixed(3);
+}
+
+// ━━━━━━━━━━ DARK MODE ━━━━━━━━━━
+function toggleDark() {
+  isDark = !isDark;
+  store.set('dark', isDark);
+  applyDark();
+}
+function applyDark() {
+  document.body.classList.toggle('dark', isDark);
+  document.getElementById('dark-btn').textContent = isDark ? '☀️' : '🌙';
+  document.querySelector('meta[name="theme-color"]').content = isDark ? '#1E1A2E' : '#C49A7A';
+}
+
+// ━━━━━━━━━━ NAV ━━━━━━━━━━
+const PAGES = [
+  {id:'home',icon:'🏠',label:'首页'},{id:'diary',icon:'📖',label:'日记'},
+  {id:'todo',icon:'☑️',label:'待办'},{id:'vocab',icon:'あ',label:'单词'},
+  {id:'chat',icon:'💬',label:'聊天'},
+];
+let currentPage = 'home';
+
+function initNav() {
+  document.getElementById('nav').innerHTML = PAGES.map(p =>
+    `<button class="nav-btn${p.id===currentPage?' active':''}" onclick="navigate('${p.id}')">
+      <div class="icon">${p.icon}</div><div class="label">${p.label}</div>
+    </button>`
+  ).join('');
+}
+
+function navigate(id) {
+  currentPage = id;
+  initNav();
+  const el = document.getElementById('content');
+  el.classList.remove('page-enter');
+  void el.offsetWidth;
+  el.classList.add('page-enter');
+  render();
+}
+
+function render() {
+  const el = document.getElementById('content');
+  ({home:renderHome,diary:renderDiary,todo:renderTodo,vocab:renderVocab,chat:renderChat})[currentPage](el);
+}
+
+// ━━━━━━━━━━ HELPERS ━━━━━━━━━━
+const MOODS = [
+  {emoji:'😊',label:'开心',c:'#FFB347'},{emoji:'😌',label:'平静',c:'#87CEEB'},
+  {emoji:'😢',label:'难过',c:'#7B9EBF'},{emoji:'😤',label:'生气',c:'#E07A5F'},
+  {emoji:'😴',label:'困困',c:'#B8A9C9'},{emoji:'🥰',label:'幸福',c:'#F4ACB7'},
+  {emoji:'😰',label:'焦虑',c:'#CDB4DB'},{emoji:'🤩',label:'兴奋',c:'#FFD700'},
+];
+const fmtDate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const daysBetween=(a,b)=>Math.floor((b-a)/86400000);
+const ANNIVERSARY=new Date(2026,2,13), JAPAN=new Date(2028,3,1);
+const WD=['日','月','火','水','木','金','土'];
+const escHtml=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+
+// ── SVG Decorations ──
+function heartDeco() {
+  return `
+    <svg class="deco sparkle sparkle-d1" style="top:8px;right:12px;width:22px;opacity:.3" viewBox="0 0 24 24" fill="var(--pink)">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+    <svg class="deco sparkle sparkle-d2" style="top:45%;right:30px;width:14px;opacity:.2" viewBox="0 0 24 24" fill="var(--pink)">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+    <svg class="deco sparkle sparkle-d3" style="bottom:10px;left:14px;width:16px;opacity:.2" viewBox="0 0 24 24" fill="var(--pink)">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+    <div class="deco sparkle sparkle-d4" style="top:12px;left:16px;font-size:10px;opacity:.3">✦</div>
+    <div class="deco sparkle sparkle-d1" style="bottom:14px;right:40px;font-size:8px;opacity:.25">✦</div>
+  `;
+}
+function sakuraDeco() {
+  return `
+    <svg class="deco sakura" style="top:-5px;right:20px;width:16px;animation-delay:0s;opacity:.4" viewBox="0 0 24 24" fill="var(--pink)">
+      <ellipse cx="12" cy="12" rx="5" ry="8" transform="rotate(30 12 12)"/>
+    </svg>
+    <svg class="deco sakura" style="top:-5px;right:55px;width:12px;animation-delay:1.5s;opacity:.3" viewBox="0 0 24 24" fill="var(--lavender)">
+      <ellipse cx="12" cy="12" rx="5" ry="8" transform="rotate(-20 12 12)"/>
+    </svg>
+    <svg class="deco sakura" style="top:-5px;left:40%;width:10px;animation-delay:2.8s;opacity:.35" viewBox="0 0 24 24" fill="var(--pink)">
+      <ellipse cx="12" cy="12" rx="4" ry="7" transform="rotate(45 12 12)"/>
+    </svg>
+    <div class="deco sparkle sparkle-d2" style="top:10px;right:14px;font-size:11px;opacity:.25">⛩️</div>
+    <div class="deco sparkle sparkle-d3" style="bottom:8px;left:12px;font-size:9px;opacity:.2">🌸</div>
+    <div class="deco sparkle sparkle-d1" style="bottom:12px;right:35px;font-size:8px;opacity:.2">✦</div>
+  `;
+}
+
+// ━━━━━━━━━━ HOME ━━━━━━━━━━
+function renderHome(el) {
+  const now=new Date(), h=now.getHours();
+  const greet = h<6?'夜深了，还没睡呀 🌙':h<12?'早上好 ☀️':h<18?'下午好 🌤️':h<23?'晚上好 ✨':'夜猫子模式 🌙';
+  const together=daysBetween(ANNIVERSARY,now), toJapan=daysBetween(now,JAPAN);
+  const todayMood=diary.find(d=>d.date===fmtDate(now));
+  const doneTodo=todos.filter(t=>t.done).length;
+  const pct=todos.length?Math.round(doneTodo/todos.length*100):0;
+
+  el.innerHTML=`
+    <div style="margin-bottom:4px;font-size:24px;font-weight:800">${greet}</div>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:20px;font-weight:600">${fmtDate(now)} · ${WD[now.getDay()]}曜日</div>
+
+    <div class="card-grid">
+      <div class="cd-card cd-love" onclick="navigate('diary')" style="cursor:pointer">
+        ${heartDeco()}
+        <div class="cd-tag">❤️ 在一起</div>
+        <div class="cd-days" style="color:var(--pink)">${together}</div>
+        <div class="cd-sub">天 · 2026.03.13 起</div>
+      </div>
+      <div class="cd-card cd-japan" onclick="navigate('vocab')" style="cursor:pointer">
+        ${sakuraDeco()}
+        <div class="cd-tag">✈️ 去日本</div>
+        <div class="cd-days" style="color:var(--sky)">${toJapan}</div>
+        <div class="cd-sub">天 · 目标 2028 春</div>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card" onclick="navigate('diary')" style="cursor:pointer">
+        <div class="sec-title">今日心情</div>
+        ${todayMood
+          ?`<div style="font-size:26px">${todayMood.mood} <span style="font-size:13px;font-weight:600">${MOODS.find(m=>m.emoji===todayMood.mood)?.label||''}</span></div>`
+          :`<div style="font-size:13px;color:var(--muted);font-weight:500">还没记录 →</div>`}
+      </div>
+      <div class="card" onclick="navigate('todo')" style="cursor:pointer">
+        <div class="sec-title">待办进度</div>
+        <div class="stat-val">${doneTodo}/${todos.length}</div>
+        <div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+
+    <div class="card" onclick="navigate('diary')" style="cursor:pointer">
+      <div class="sec-title">📝 最近日记</div>
+      ${diary.slice(0,3).map((d,i)=>`
+        <div class="diary-entry" ${i===Math.min(2,diary.length-1)?'style="border-bottom:none"':''}>
+          <div style="font-size:24px;flex-shrink:0">${d.mood}</div>
+          <div><div style="font-size:12px;color:var(--muted);font-weight:600">${d.date}</div>
+          <div style="font-size:14px;line-height:1.5;margin-top:2px;font-weight:500">${(d.text||'').slice(0,30)}${(d.text||'').length>30?'...':''}</div></div>
+        </div>`).join('')}
+      ${diary.length===0?'<div style="font-size:13px;color:var(--muted)">还没有日记，快去写一篇吧～</div>':''}
+    </div>
+
+    <div class="card" onclick="navigate('vocab')" style="cursor:pointer">
+      <div class="sec-title">📚 单词进度</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span class="stat-val">${words.length}</span><span class="stat-label">个单词</span>
+        <span style="margin-left:12px;font-size:14px;color:var(--muted);font-weight:600">⭐ ${words.filter(w=>w.star).length} 收藏</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="sec-title" style="margin:0">📊 API 用量监控</div>
+        <button style="background:none;border:none;font-size:11px;color:var(--danger);font-weight:700;cursor:pointer" onclick="if(confirm('清除用量记录？')){apiUsage={total:{in:0,out:0,reqs:0},daily:{}};saveUsage();render()}">重置</button>
+      </div>
+      ${apiConfig.provider==='none'?'<div style="font-size:13px;color:var(--muted)">还没配置 API，去设置里选一个吧</div>':`
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:10px">
+            <div style="font-size:20px;font-weight:800;color:var(--accent)">${apiUsage.total.reqs}</div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600">总请求</div>
+          </div>
+          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:10px">
+            <div style="font-size:20px;font-weight:800;color:var(--sky)">${((apiUsage.total.in+apiUsage.total.out)/1000).toFixed(1)}k</div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600">总Token</div>
+          </div>
+          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:10px">
+            <div style="font-size:20px;font-weight:800;color:var(--success)">$${estimateCost()}</div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600">估算费用</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:500">
+          <span>输入 ${(apiUsage.total.in/1000).toFixed(1)}k · 输出 ${(apiUsage.total.out/1000).toFixed(1)}k</span>
+          <span>今日 ${(((apiUsage.daily[fmtDate(now)]?.in||0)+(apiUsage.daily[fmtDate(now)]?.out||0))/1000).toFixed(1)}k</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:500">服务商: ${PROVS[apiConfig.provider]?.l||apiConfig.provider} · ${apiConfig.model}</div>
+      `}
+    </div>
+  `;
+}
+
+// ━━━━━━━━━━ DIARY ━━━━━━━━━━
+let diaryView='write', diaryMood=null;
+function renderDiary(el) {
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center" class="mb-12">
+      <div class="page-title" style="margin:0">📖 心情日记</div>
+      <div class="tab-row" style="margin:0">
+        <button class="btn btn-sm ${diaryView==='write'?'btn-primary':'btn-secondary'}" onclick="diaryView='write';renderDiary(document.getElementById('content'))">写日记</button>
+        <button class="btn btn-sm ${diaryView==='history'?'btn-primary':'btn-secondary'}" onclick="diaryView='history';renderDiary(document.getElementById('content'))">历史</button>
+      </div>
+    </div><div id="dc"></div>`;
+  const box=document.getElementById('dc');
+  if(diaryView==='write'){
+    box.innerHTML=`<div class="card">
+      <div class="sec-title">今天的心情是？</div>
+      <div class="mood-grid">${MOODS.map(m=>`<button class="mood-chip ${diaryMood===m.emoji?'active':''}" onclick="diaryMood='${m.emoji}';renderDiary(document.getElementById('content'))">${m.emoji}<span>${m.label}</span></button>`).join('')}</div>
+      <textarea class="input" id="diary-text" placeholder="写点什么吧... ✨" style="margin-bottom:12px"></textarea>
+      <button class="btn btn-primary" onclick="submitDiary()" ${diaryMood?'':'disabled'}>💾 保存今日日记</button>
+    </div>`;
+  } else {
+    box.innerHTML=diary.length===0?'<div class="empty">📖 还没有日记，快去写第一篇吧～</div>':
+      diary.map((d,i)=>`<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">${d.mood}</span>
+          <span style="font-size:14px;font-weight:700">${MOODS.find(m=>m.emoji===d.mood)?.label||''}</span></div>
+          <span style="font-size:12px;color:var(--muted);font-weight:600">${d.date}</span>
+        </div>
+        ${d.text?`<p style="font-size:14px;line-height:1.6;margin:4px 0 0;font-weight:500">${d.text}</p>`:''}
+        <button class="diary-del" onclick="deleteDiary(${i})">删除</button>
+      </div>`).join('');
+  }
+}
+function submitDiary(){
+  const t=document.getElementById('diary-text')?.value||'';
+  const e={date:fmtDate(new Date()),mood:diaryMood,text:t,ts:Date.now()};
+  const i=diary.findIndex(d=>d.date===e.date);
+  if(i>=0)diary[i]=e;else diary.unshift(e);
+  saveDiary();diaryMood=null;renderDiary(document.getElementById('content'));
+}
+function deleteDiary(i){diary.splice(i,1);saveDiary();renderDiary(document.getElementById('content'))}
+
+// ━━━━━━━━━━ TODO ━━━━━━━━━━
+function renderTodo(el){
+  const a=todos.filter(t=>!t.done),d=todos.filter(t=>t.done);
+  el.innerHTML=`
+    <div class="page-title">☑️ 待办事项</div>
+    <div class="card" style="margin-bottom:14px"><div class="row">
+      <input class="input" id="ti" placeholder="添加新待办... ✨" style="flex:1" onkeydown="if(event.key==='Enter')addTodo()">
+      <button class="btn btn-primary" onclick="addTodo()">＋</button>
+    </div></div>
+    ${a.length?`<div class="sec-title">进行中 (${a.length})</div>`:''}
+    ${a.map(t=>todoHtml(t,false)).join('')}
+    ${d.length?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <div class="sec-title" style="margin:0">已完成 (${d.length})</div>
+      <button style="background:none;border:none;color:var(--danger);font-size:12px;font-weight:700" onclick="clearDone()">清除</button></div>`:''}
+    ${d.map(t=>todoHtml(t,true)).join('')}
+    ${todos.length===0?'<div class="empty">☑️ 没有待办事项，享受自由吧～</div>':''}`;
+}
+function todoHtml(t,done){
+  return `<div class="card" style="padding:0;margin-bottom:8px;${done?'opacity:.55':''}">
+    <div class="todo-item"><button class="todo-check ${done?'done':''}" onclick="toggleTodo(${t.id})">${done?'✓':''}</button>
+    <span class="todo-text ${done?'done':''}">${t.text}</span>
+    <button class="todo-del" onclick="removeTodo(${t.id})">🗑</button></div></div>`;
+}
+function addTodo(){const e=document.getElementById('ti');if(!e?.value.trim())return;todos.unshift({id:Date.now(),text:e.value.trim(),done:false});saveTodos();renderTodo(document.getElementById('content'))}
+function toggleTodo(id){const t=todos.find(x=>x.id===id);if(t)t.done=!t.done;saveTodos();renderTodo(document.getElementById('content'))}
+function removeTodo(id){todos=todos.filter(x=>x.id!==id);saveTodos();renderTodo(document.getElementById('content'))}
+function clearDone(){todos=todos.filter(t=>!t.done);saveTodos();renderTodo(document.getElementById('content'))}
+
+// ━━━━━━━━━━ VOCAB ━━━━━━━━━━
+let vocabView='list',quizIdx=0,flipped=false;
+function renderVocab(el){
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center" class="mb-12">
+      <div class="page-title" style="margin:0">📚 単語帳</div>
+      <div class="tab-row" style="margin:0">
+        <button class="btn btn-sm ${vocabView==='list'?'btn-primary':'btn-secondary'}" onclick="vocabView='list';renderVocab(document.getElementById('content'))">单词表</button>
+        <button class="btn btn-sm ${vocabView==='quiz'?'btn-primary':'btn-secondary'}" onclick="vocabView='quiz';quizIdx=0;flipped=false;renderVocab(document.getElementById('content'))">练习</button>
+      </div>
+    </div><div id="vc"></div>`;
+  const box=document.getElementById('vc');
+  if(vocabView==='list'){
+    box.innerHTML=`<div class="card" style="margin-bottom:14px"><div class="row">
+      <input class="input" id="vj" placeholder="日本語" style="flex:1" onkeydown="if(event.key==='Enter')addWord()">
+      <input class="input" id="vz" placeholder="中文" style="flex:1" onkeydown="if(event.key==='Enter')addWord()">
+      <button class="btn btn-primary" onclick="addWord()">＋</button></div></div>
+      <div class="sec-title">共 ${words.length} 个单词</div>
+      ${words.map((w,i)=>`<div class="card" style="padding:0;margin-bottom:8px"><div class="vocab-item">
+        <button class="vocab-star" onclick="toggleStar(${i})">${w.star?'⭐':'☆'}</button>
+        <div style="flex:1"><span class="vocab-ja">${w.ja}</span><span class="vocab-zh">${w.zh}</span></div>
+        <button class="todo-del" onclick="removeWord(${i})">🗑</button></div></div>`).join('')}
+      ${words.length===0?'<div class="empty">📚 添加一些单词开始学习吧！</div>':''}`;
+  } else {
+    if(!words.length){box.innerHTML='<div class="empty">📚 先去添加一些单词吧～</div>';return}
+    const w=words[quizIdx%words.length],total=words.length,cur=(quizIdx%total)+1;
+    box.innerHTML=`<div style="padding-top:20px;display:flex;flex-direction:column;align-items:center">
+      <div class="flashcard" onclick="flipped=!flipped;renderVocab(document.getElementById('content'))">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">${flipped?'中文':'日本語'} · 点击翻转</div>
+        <div style="font-size:26px;font-weight:800">${flipped?w.zh:w.ja}</div></div>
+      <div style="display:flex;gap:12px;margin-top:20px;align-items:center">
+        <button class="btn btn-secondary" onclick="quizIdx=(quizIdx-1+${total})%${total};flipped=false;renderVocab(document.getElementById('content'))">◀ 上一个</button>
+        <span style="font-size:14px;color:var(--muted);font-weight:700">${cur}/${total}</span>
+        <button class="btn btn-primary" onclick="quizIdx=(quizIdx+1)%${total};flipped=false;renderVocab(document.getElementById('content'))">下一个 ▶</button>
+      </div></div>`;
+  }
+}
+function addWord(){const j=document.getElementById('vj')?.value.trim(),z=document.getElementById('vz')?.value.trim();if(!j||!z)return;words.unshift({ja:j,zh:z,star:false});saveWords();renderVocab(document.getElementById('content'))}
+function toggleStar(i){words[i].star=!words[i].star;saveWords();renderVocab(document.getElementById('content'))}
+function removeWord(i){words.splice(i,1);saveWords();renderVocab(document.getElementById('content'))}
+
+// ━━━━━━━━━━ CHAT ━━━━━━━━━━
+let chatLoading=false, showMemPanel=false;
+
+function renderChat(el){
+  const ok=apiConfig.provider!=='none'&&apiConfig.key&&apiConfig.url;
+  const sess=curSess();
+  el.style.cssText='display:flex;flex-direction:column;height:100%';
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-shrink:0">
+      <div class="page-title" style="margin:0">💬 AI 聊天</div>
+      <div class="row" style="gap:4px">
+        <button class="btn btn-sm ${showMemPanel?'btn-primary':'btn-secondary'}" onclick="showMemPanel=!showMemPanel;renderChat(document.getElementById('content'))">🧠 ${memories.length}</button>
+      </div>
+    </div>
+
+    <!-- Session tabs -->
+    <div class="sess-bar">
+      ${chatSessions.map(s=>`<button class="sess-tab ${s.id===curSessId?'active':''}" onclick="switchSess(${s.id})">
+        <span class="sess-name">${s.name}</span>
+        <span style="font-size:10px;opacity:.5">${s.msgs.length}</span>
+      </button>`).join('')}
+      <button class="sess-add" onclick="newSess()">＋</button>
+    </div>
+
+    <!-- Session actions -->
+    <div style="display:flex;gap:4px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap">
+      <button class="sess-act-btn" onclick="renameSess()">✏️ 重命名</button>
+      <button class="sess-act-btn" onclick="compressSess()" ${!ok||sess.msgs.length<4?'disabled style="opacity:.4"':''}>🗜️ 压缩</button>
+      <button class="sess-act-btn" onclick="clearSess()">🧹 清空</button>
+      <button class="sess-act-btn" onclick="deleteSess()" ${chatSessions.length<=1?'disabled style="opacity:.4"':''}>🗑 删除</button>
+    </div>
+
+    ${showMemPanel?`<div class="card" style="flex-shrink:0;max-height:150px;overflow-y:auto;margin-bottom:8px">
+      <div class="sec-title">📝 记忆库</div>
+      <div class="row" style="margin-bottom:8px">
+        <input class="input" id="mi" placeholder="添加记忆..." style="flex:1" onkeydown="if(event.key==='Enter')addMem()">
+        <button class="btn btn-sm btn-primary" onclick="addMem()">＋</button></div>
+      ${memories.map((m,i)=>`<div class="mem-item"><span class="dot">•</span><span style="flex:1">${m}</span><button class="del" onclick="removeMem(${i})">✕</button></div>`).join('')}
+    </div>`:''}
+
+    ${!ok?`<div class="card" style="text-align:center;padding:30px">
+      <div style="font-size:32px;margin-bottom:8px">🤖</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:12px;font-weight:500;line-height:1.6">还没有配置 API<br>点右上角 ⚙️ 设置一下吧</div>
+      <button class="btn btn-primary" onclick="toggleSettings()">去设置</button></div>`:`
+      <div class="chat-area" id="ca">
+        ${sess.msgs.length===0?'<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:32px;opacity:.3;margin-bottom:8px">💬</div><div style="font-weight:500">说点什么吧～</div></div>':''}
+        ${sess.msgs.map(m=>`<div class="chat-msg ${m.role}"><div class="chat-bubble${m.compressed?' compressed':''}"${m.compressed?' style="border-left:3px solid var(--lavender);font-size:13px"':''}>${m.compressed?'📋 <b>对话摘要</b><br>':''}${escHtml(m.content)}</div></div>`).join('')}
+        ${chatLoading?'<div class="chat-msg assistant"><div class="chat-bubble" style="color:var(--muted)">思考中 ✦✦✦</div></div>':''}
+        <div id="ce"></div>
+      </div>
+      <div class="chat-input-row">
+        <input class="input" id="ci" placeholder="说点什么... ✨" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" style="flex:1">
+        <button class="btn btn-primary" onclick="sendChat()" ${chatLoading?'disabled':''}>➤</button>
+      </div>`}`;
+  const a=document.getElementById('ca');if(a)a.scrollTop=a.scrollHeight;
+  if(currentPage!=='chat')el.style.cssText='';
+}
+
+// Session management
+function newSess(){
+  const id=Date.now();
+  chatSessions.push({id,name:`对话 ${chatSessions.length+1}`,msgs:[],ts:id});
+  curSessId=id;saveChat();renderChat(document.getElementById('content'));
+}
+function switchSess(id){curSessId=id;saveChat();renderChat(document.getElementById('content'))}
+function renameSess(){
+  const s=curSess();const name=prompt('给这个对话取个名字：',s.name);
+  if(name&&name.trim()){s.name=name.trim();saveChat();renderChat(document.getElementById('content'))}
+}
+function clearSess(){curSess().msgs=[];saveChat();renderChat(document.getElementById('content'))}
+function deleteSess(){
+  if(chatSessions.length<=1)return;
+  if(!confirm('确定删除这个对话？'))return;
+  chatSessions=chatSessions.filter(s=>s.id!==curSessId);
+  curSessId=chatSessions[chatSessions.length-1].id;
+  saveChat();renderChat(document.getElementById('content'));
+}
+
+// Compress current session
+async function compressSess(){
+  const sess=curSess();
+  if(sess.msgs.length<4||chatLoading)return;
+  chatLoading=true;renderChat(document.getElementById('content'));
+  try{
+    const sys='请用2-3句话简洁地总结以下对话的要点和关键信息，保留重要的事实和结论。只输出总结内容。';
+    const convo=sess.msgs.map(m=>`${m.role==='user'?'用户':'AI'}: ${m.content}`).join('\n');
+    let summary='';
+    if(apiConfig.provider==='anthropic'){
+      const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiConfig.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:apiConfig.model,max_tokens:512,system:sys,messages:[{role:'user',content:convo}]})});
+      const d=await r.json();summary=d.content?.map(c=>c.text||'').join('')||'压缩失败...';
+      if(d.usage)trackUsage(d.usage.input_tokens||0,d.usage.output_tokens||0);
+    }else{
+      const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiConfig.key}`},
+        body:JSON.stringify({model:apiConfig.model,max_tokens:512,messages:[{role:'system',content:sys},{role:'user',content:convo}]})});
+      const d=await r.json();summary=d.choices?.[0]?.message?.content||'压缩失败...';
+      if(d.usage)trackUsage(d.usage.prompt_tokens||0,d.usage.completion_tokens||0);
+    }
+    sess.msgs=[{role:'assistant',content:summary,compressed:true}];
+    saveChat();
+  }catch(e){alert('压缩失败，检查API设置');}
+  chatLoading=false;renderChat(document.getElementById('content'));
+}
+
+function addMem(){const e=document.getElementById('mi');if(!e?.value.trim())return;memories.push(e.value.trim());saveMemories();renderChat(document.getElementById('content'))}
+function removeMem(i){memories.splice(i,1);saveMemories();renderChat(document.getElementById('content'))}
+
+async function sendChat(){
+  const e=document.getElementById('ci');if(!e?.value.trim()||chatLoading)return;
+  const sess=curSess();
+  const text=e.value.trim();sess.msgs.push({role:'user',content:text});saveChat();chatLoading=true;
+  renderChat(document.getElementById('content'));
+  try{
+    const sys=apiConfig.sysPrompt+(memories.length?'\n\n以下是你记住的关于小钰的信息：\n'+memories.map((m,i)=>`${i+1}. ${m}`).join('\n'):'');
+    let reply='';
+    if(apiConfig.provider==='anthropic'){
+      const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiConfig.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:apiConfig.model,max_tokens:1024,system:sys,messages:sess.msgs.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role,content:m.content}))})});
+      const d=await r.json();reply=d.content?.map(c=>c.text||'').join('')||d.error?.message||'出错了...';
+      if(d.usage)trackUsage(d.usage.input_tokens||0,d.usage.output_tokens||0);
+    }else{
+      const msgs=[{role:'system',content:sys},...sess.msgs.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role,content:m.content}))];
+      const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiConfig.key}`},
+        body:JSON.stringify({model:apiConfig.model,max_tokens:1024,messages:msgs})});
+      const d=await r.json();reply=d.choices?.[0]?.message?.content||d.error?.message||'出错了...';
+      if(d.usage)trackUsage(d.usage.prompt_tokens||0,d.usage.completion_tokens||0);
+    }
+    sess.msgs.push({role:'assistant',content:reply});
+  }catch(e){sess.msgs.push({role:'assistant',content:'网络出了点问题 (´；ω；`)'});}
+  saveChat();chatLoading=false;renderChat(document.getElementById('content'));
+}
+
+// ━━━━━━━━━━ SETTINGS ━━━━━━━━━━
+const PROVS={
+  none:{l:'未配置',u:'',m:''},anthropic:{l:'Anthropic (Claude)',u:'https://api.anthropic.com/v1/messages',m:'claude-sonnet-4-6'},
+  deepseek:{l:'DeepSeek',u:'https://api.deepseek.com/v1/chat/completions',m:'deepseek-chat'},
+  openai:{l:'OpenAI',u:'https://api.openai.com/v1/chat/completions',m:'gpt-4o-mini'},
+  custom:{l:'自定义',u:'',m:''},
+};
+function toggleSettings(){
+  const p=document.getElementById('settingsPanel'),o=document.getElementById('overlay');
+  if(p.classList.contains('show')){p.classList.remove('show');o.classList.remove('show')}
+  else{renderSettings();p.classList.add('show');o.classList.add('show')}
+}
+function renderSettings(){
+  document.getElementById('settingsBody').innerHTML=`
+    <div class="setting-group"><div class="setting-label">AI 服务商</div>
+      <select class="input" id="sp" onchange="onProvChange()">
+        ${Object.entries(PROVS).map(([k,v])=>`<option value="${k}" ${apiConfig.provider===k?'selected':''}>${v.l}</option>`).join('')}
+      </select></div>
+    <div id="af" style="${apiConfig.provider==='none'?'display:none':''}">
+      <div class="setting-group"><div class="setting-label">API Key</div>
+        <input class="input" type="password" id="sk" value="${apiConfig.key}" placeholder="sk-..."></div>
+      <div class="setting-group"><div class="setting-label">API URL</div>
+        <input class="input" id="su" value="${apiConfig.url}" placeholder="https://..."></div>
+      <div class="setting-group"><div class="setting-label">模型名称</div>
+        <input class="input" id="sm" value="${apiConfig.model}" placeholder="model name"></div>
+      <div class="setting-group"><div class="setting-label">System Prompt</div>
+        <textarea class="input" id="ss" rows="3">${apiConfig.sysPrompt}</textarea></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveSettings()" style="width:100%;margin-bottom:18px">💾 保存设置</button>
+    <div class="setting-group"><div class="setting-label">🧠 记忆库管理</div>
+      <div class="setting-row"><input class="input" id="smi" placeholder="添加记忆..." style="flex:1">
+        <button class="btn btn-sm btn-primary" onclick="addMemS()">＋</button></div>
+      ${memories.map((m,i)=>`<div class="mem-item"><span class="dot">•</span><span style="flex:1">${m}</span>
+        <button class="del" onclick="removeMem(${i});renderSettings()">✕</button></div>`).join('')}
+      ${memories.length===0?'<div style="font-size:13px;color:var(--muted)">还没有记忆</div>':''}</div>
+    <div class="setting-group" style="border-top:1px solid var(--border);padding-top:16px">
+      <div class="setting-label">数据管理</div>
+      <button class="btn btn-sm btn-danger" onclick="if(confirm('确定清除所有数据？'))clearAll()" style="margin-top:4px">🗑 清除所有数据</button></div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px;padding-bottom:16px;font-weight:600">
+      小钰の空間 · made with ♡ by Claude</div>`;
+}
+function onProvChange(){
+  const p=document.getElementById('sp').value,pr=PROVS[p];
+  apiConfig.provider=p;if(pr.u)apiConfig.url=pr.u;if(pr.m)apiConfig.model=pr.m;saveApi();renderSettings();
+}
+function saveSettings(){
+  apiConfig.provider=document.getElementById('sp').value;
+  const af=document.getElementById('af');
+  if(af.style.display!=='none'){apiConfig.key=document.getElementById('sk').value;apiConfig.url=document.getElementById('su').value;
+    apiConfig.model=document.getElementById('sm').value;apiConfig.sysPrompt=document.getElementById('ss').value;}
+  saveApi();toggleSettings();if(currentPage==='chat')renderChat(document.getElementById('content'));
+}
+function addMemS(){const e=document.getElementById('smi');if(!e?.value.trim())return;memories.push(e.value.trim());saveMemories();renderSettings()}
+function clearAll(){diary=[];todos=[];words=[];memories=[];chatSessions=[{id:1,name:'新对话 1',msgs:[],ts:Date.now()}];curSessId=1;apiUsage={total:{in:0,out:0,reqs:0},daily:{}};saveDiary();saveTodos();saveWords();saveMemories();saveChat();saveUsage();toggleSettings();render()}
+
+// ━━━━━━━━━━ PWA ━━━━━━━━━━
+function initPWA(){
+  const c=document.createElement('canvas');c.width=192;c.height=192;const x=c.getContext('2d');
+  x.fillStyle='#FAF2EB';x.beginPath();x.roundRect(0,0,192,192,40);x.fill();
+  x.fillStyle='#C49A7A';x.beginPath();x.arc(96,78,38,0,Math.PI*2);x.fill();
+  x.fillStyle='#FFF';x.font='34px serif';x.textAlign='center';x.fillText('♡',96,92);
+  x.fillStyle='#C49A7A';x.font='bold 24px Quicksand,sans-serif';x.fillText('小钰',96,152);
+  const icon=c.toDataURL('image/png');
+  const m={name:'小钰の空間',short_name:'小钰の空間',start_url:'.',display:'standalone',
+    background_color:'#FAF2EB',theme_color:'#C49A7A',icons:[{src:icon,sizes:'192x192',type:'image/png'}]};
+  const b=new Blob([JSON.stringify(m)],{type:'application/json'});
+  document.getElementById('manifest-link').href=URL.createObjectURL(b);
+  const l=document.createElement('link');l.rel='apple-touch-icon';l.href=icon;document.head.appendChild(l);
+}
+
+// ━━━━━━━━━━ INIT ━━━━━━━━━━
+applyDark();initPWA();initNav();render();
+</script>
+</body>
+</html>
