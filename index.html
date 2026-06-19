@@ -6,29 +6,31 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="小钰の空間">
-<meta name="theme-color" content="#C49A7A">
+<meta name="theme-color" content="#E8A0B4">
 <title>小钰の空間</title>
 <link rel="manifest" id="manifest-link">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#FFF5EE;--bg2:#FAF2EB;--card:#FFFFFF;--card-shadow:0 2px 16px rgba(196,154,122,0.1);
-  --accent:#C49A7A;--accent-light:#E8D5C4;--accent-hover:#B38A6A;
-  --text:#3D2E1F;--muted:#8B7D6B;--border:#E8DDD3;
-  --success:#7CAE7A;--danger:#D4726A;--soft:#F5EBE3;
-  --pink:#F4ACB7;--lavender:#C9B8DB;--mint:#A8D8C8;--sky:#A8C8E8;
-  --nav-bg:rgba(255,255,255,0.85);--nav-border:rgba(232,221,211,0.8);
+  --bg:#FFF5F5;--bg2:#FFF0F2;--card:#FFFFFF;--card-shadow:0 2px 16px rgba(232,160,180,0.10);
+  --accent:#E8A0B4;--accent-light:#FADDE5;--accent-hover:#D4899E;
+  --text:#4A3540;--muted:#9E8A92;--border:#F0DDE3;
+  --success:#7CAE7A;--danger:#D4726A;--soft:#FEF0F2;
+  --pink:#F4ACB7;--lavender:#D4B8E0;--mint:#B8E0D0;--sky:#B8D0E8;
+  --nav-bg:rgba(255,245,245,0.88);--nav-border:rgba(240,221,227,0.8);
   --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
-  --float1:#F4ACB7;--float2:#C9B8DB;--float3:#E8D5C4;--float4:#A8D8C8;
+  --float1:#F4ACB7;--float2:#D4B8E0;--float3:#FADDE5;--float4:#B8E0D0;
+  --glow:rgba(232,160,180,0.15);
 }
 .dark {
-  --bg:#1E1A2E;--bg2:#252040;--card:#2D2845;--card-shadow:0 2px 16px rgba(0,0,0,0.25);
-  --accent:#D4A982;--accent-light:#3D3555;--accent-hover:#E0BA95;
-  --text:#E8DDD3;--muted:#8B8099;--border:#3D3555;
-  --success:#7CAE7A;--danger:#D4726A;--soft:#2D2845;
+  --bg:#1E1520;--bg2:#251A28;--card:#2D2232;--card-shadow:0 2px 16px rgba(0,0,0,0.25);
+  --accent:#E8A0B4;--accent-light:#3D2535;--accent-hover:#F0B8C8;
+  --text:#F0DDE3;--muted:#9E8A99;--border:#3D2535;
+  --success:#7CAE7A;--danger:#D4726A;--soft:#2D2232;
   --pink:#C4788A;--lavender:#9988BB;--mint:#6BA894;--sky:#7BA0C0;
-  --nav-bg:rgba(30,26,46,0.9);--nav-border:rgba(61,53,85,0.8);
-  --float1:rgba(244,172,183,0.15);--float2:rgba(201,184,219,0.15);--float3:rgba(232,213,196,0.15);--float4:rgba(168,216,200,0.15);
+  --nav-bg:rgba(30,21,32,0.92);--nav-border:rgba(61,37,53,0.8);
+  --float1:rgba(244,172,183,0.12);--float2:rgba(212,184,224,0.12);--float3:rgba(250,221,229,0.12);--float4:rgba(184,224,208,0.12);
+  --glow:rgba(232,160,180,0.08);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Quicksand','Noto Sans SC',sans-serif;background:linear-gradient(160deg,var(--bg),var(--bg2));
@@ -38,12 +40,12 @@ input,textarea{font-family:inherit}
 
 /* ── Floating Decorations ── */
 .floats{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.float{position:absolute;border-radius:50%;opacity:.5;animation:floaty linear infinite}
-.float:nth-child(1){width:120px;height:120px;background:var(--float1);top:10%;left:-30px;animation-duration:18s}
-.float:nth-child(2){width:80px;height:80px;background:var(--float2);top:40%;right:-20px;animation-duration:22s;animation-delay:-5s}
-.float:nth-child(3){width:60px;height:60px;background:var(--float3);bottom:20%;left:20%;animation-duration:15s;animation-delay:-8s}
-.float:nth-child(4){width:100px;height:100px;background:var(--float4);top:60%;right:30%;animation-duration:20s;animation-delay:-3s}
-.float:nth-child(5){width:40px;height:40px;background:var(--float1);top:80%;left:60%;animation-duration:16s;animation-delay:-10s}
+.float{position:absolute;border-radius:50%;opacity:.35;animation:floaty linear infinite}
+.float:nth-child(1){width:130px;height:130px;background:var(--float1);top:8%;left:-35px;animation-duration:18s}
+.float:nth-child(2){width:90px;height:90px;background:var(--float2);top:38%;right:-25px;animation-duration:22s;animation-delay:-5s}
+.float:nth-child(3){width:65px;height:65px;background:var(--float3);bottom:22%;left:18%;animation-duration:15s;animation-delay:-8s}
+.float:nth-child(4){width:105px;height:105px;background:var(--float4);top:58%;right:28%;animation-duration:20s;animation-delay:-3s}
+.float:nth-child(5){width:45px;height:45px;background:var(--float1);top:78%;left:58%;animation-duration:16s;animation-delay:-10s}
 @keyframes floaty{
   0%{transform:translateY(0) rotate(0deg) scale(1)}
   25%{transform:translateY(-30px) rotate(90deg) scale(1.1)}
@@ -55,9 +57,10 @@ input,textarea{font-family:inherit}
 /* ── Header ── */
 .header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;
   padding-top:calc(14px + env(safe-area-inset-top,0px));flex-shrink:0;position:relative;z-index:10}
-.header h1{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+.header h1{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;
+  text-shadow:0 0 20px var(--glow)}
 .header-btns{display:flex;gap:6px}
-.header-btn{background:var(--card);border:1.5px solid var(--border);width:36px;height:36px;border-radius:12px;
+.header-btn{background:var(--card);border:1.5px solid var(--border);width:36px;height:36px;border-radius:50%;
   font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .3s;
   box-shadow:var(--card-shadow)}
 .header-btn:active{transform:scale(0.9)}
@@ -85,19 +88,19 @@ input,textarea{font-family:inherit}
 .nav-btn:active .icon{transform:scale(0.85)}
 
 /* ── Cards ── */
-.card{background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--border);
+.card{background:var(--card);border-radius:20px;padding:16px;border:1px solid var(--border);
   margin-bottom:12px;box-shadow:var(--card-shadow);transition:all .3s;position:relative;overflow:hidden}
 .card:active{transform:scale(0.985)}
 .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 
 /* ── Countdown Cards ── */
-.cd-card{padding:16px;border-radius:18px;position:relative;overflow:hidden;border:1px solid var(--border);
+.cd-card{padding:16px;border-radius:20px;position:relative;overflow:hidden;border:1px solid var(--border);
   box-shadow:var(--card-shadow);transition:all .3s}
 .cd-card:active{transform:scale(0.97)}
 .cd-card .deco{position:absolute;pointer-events:none}
 .cd-love{background:linear-gradient(135deg,#FFF0F3,#FFE4EC);border-color:#F8D7DE}
 .dark .cd-love{background:linear-gradient(135deg,#2D1F2B,#35253A);border-color:#3D2535}
-.cd-japan{background:linear-gradient(135deg,#EEF4FF,#E8F0FE);border-color:#D0DFEF}
+.cd-japan{background:linear-gradient(135deg,#FFF0F8,#F8E8F4);border-color:#F0D0E0}
 .dark .cd-japan{background:linear-gradient(135deg,#1E2235,#222840);border-color:#2A3050}
 .cd-tag{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
 .cd-days{font-size:34px;font-weight:800;line-height:1.2}
@@ -105,7 +108,7 @@ input,textarea{font-family:inherit}
 
 /* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;
-  border-radius:12px;border:none;font-size:14px;font-weight:700;transition:all .25s;letter-spacing:0.3px}
+  border-radius:14px;border:none;font-size:14px;font-weight:700;transition:all .25s;letter-spacing:0.3px}
 .btn:active{transform:scale(0.95)}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-secondary{background:var(--accent-light);color:var(--text)}
@@ -114,9 +117,9 @@ input,textarea{font-family:inherit}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
 /* ── Inputs ── */
-.input{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);
+.input{width:100%;padding:10px 14px;border-radius:14px;border:1.5px solid var(--border);
   background:var(--bg);color:var(--text);font-size:14px;outline:none;transition:all .25s;font-weight:500}
-.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(196,154,122,0.12)}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,160,180,0.15)}
 textarea.input{resize:none;min-height:60px}
 
 /* ── Mood ── */
@@ -129,7 +132,7 @@ textarea.input{resize:none;min-height:60px}
 
 /* ── Todo ── */
 .todo-item{display:flex;align-items:center;gap:10px;padding:12px 14px}
-.todo-check{width:24px;height:24px;border-radius:8px;border:2.5px solid var(--accent);background:none;flex-shrink:0;
+.todo-check{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--accent);background:none;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;transition:all .25s}
 .todo-check.done{background:var(--success);border-color:var(--success)}
 .todo-check:active{transform:scale(0.85)}
@@ -146,33 +149,33 @@ textarea.input{resize:none;min-height:60px}
 .vocab-zh{font-size:14px;color:var(--muted);margin-left:8px;font-weight:500}
 .flashcard{width:100%;max-width:320px;height:180px;margin:0 auto;border-radius:22px;
   border:2.5px solid var(--accent);background:var(--card);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 24px rgba(196,154,122,0.15);
+  align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 24px rgba(232,160,180,0.15);
   transition:all .3s}
 .flashcard:active{transform:scale(0.97) rotateY(5deg)}
 
 /* ── Chat ── */
 .chat-area{flex:1;overflow-y:auto;padding:10px;background:var(--bg);border-radius:16px;
-  border:1px solid var(--border);margin-bottom:10px;-webkit-overflow-scrolling:touch}
+  border:1px solid var(--border);margin-bottom:10px;-webkit-overflow-scrolling:touch;min-height:0}
 .chat-msg{display:flex;margin-bottom:10px}
 .chat-msg.user{justify-content:flex-end}
 .chat-msg.assistant{justify-content:flex-start}
-.chat-bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.6;
+.chat-bubble{max-width:80%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.6;
   white-space:pre-wrap;font-weight:500;transition:all .3s}
 .chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
 .chat-msg.assistant .chat-bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
-.chat-input-row{display:flex;gap:8px;flex-shrink:0}
+.chat-input-row{display:flex;gap:8px;flex-shrink:0;position:relative;z-index:5}
 
 /* ── Chat Sessions ── */
 .sess-bar{display:flex;gap:6px;overflow-x:auto;flex-shrink:0;padding-bottom:8px;margin-bottom:4px;
   -webkit-overflow-scrolling:touch;scrollbar-width:none}
 .sess-bar::-webkit-scrollbar{display:none}
-.sess-tab{flex-shrink:0;padding:6px 14px;border-radius:10px;border:1.5px solid var(--border);
+.sess-tab{flex-shrink:0;padding:6px 14px;border-radius:12px;border:1.5px solid var(--border);
   background:var(--card);font-size:12px;font-weight:700;color:var(--muted);transition:all .25s;
   display:flex;align-items:center;gap:4px;white-space:nowrap;max-width:120px}
 .sess-tab.active{border-color:var(--accent);color:var(--accent);background:var(--soft)}
 .sess-tab:active{transform:scale(0.93)}
 .sess-tab .sess-name{overflow:hidden;text-overflow:ellipsis}
-.sess-add{flex-shrink:0;width:32px;height:32px;border-radius:10px;border:1.5px dashed var(--border);
+.sess-add{flex-shrink:0;width:32px;height:32px;border-radius:12px;border:1.5px dashed var(--border);
   background:none;font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center;
   transition:all .25s}
 .sess-add:active{transform:scale(0.9);border-color:var(--accent);color:var(--accent)}
@@ -202,6 +205,41 @@ textarea.input{resize:none;min-height:60px}
 .mem-item .dot{color:var(--accent)}
 .mem-item .del{background:none;border:none;color:var(--muted);font-size:14px;padding:2px;cursor:pointer}
 
+/* ── Calendar View ── */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
+.cal-header{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:4px 0}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:10px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;
+  position:relative;background:transparent}
+.cal-day:active{transform:scale(0.9)}
+.cal-day.today{background:var(--accent-light);font-weight:800}
+.cal-day.has-diary::after{content:'';position:absolute;bottom:3px;width:5px;height:5px;
+  border-radius:50%;background:var(--accent)}
+.cal-day.other-month{opacity:.3}
+
+/* ── Import Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;
+  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal{background:var(--card);border-radius:22px;padding:24px;width:100%;max-width:400px;max-height:80dvh;
+  overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:12px}
+
+/* ── Celebration ── */
+.celebration{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden}
+.confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFall linear forwards}
+@keyframes confettiFall{
+  0%{transform:translateY(-10px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+.milestone-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:301;
+  background:var(--card);border-radius:24px;padding:28px 36px;text-align:center;
+  box-shadow:0 12px 48px rgba(232,160,180,0.3);border:2px solid var(--accent);
+  animation:toastIn .5s ease both;pointer-events:auto}
+@keyframes toastIn{
+  from{opacity:0;transform:translate(-50%,-50%) scale(0.8)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+
 /* ── Utility ── */
 .sec-title{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px}
 .page-title{font-size:22px;font-weight:800;margin-bottom:16px;letter-spacing:-0.5px}
@@ -218,6 +256,12 @@ textarea.input{resize:none;min-height:60px}
 .diary-del{background:none;border:none;color:var(--danger);font-size:11px;cursor:pointer;padding:0;margin-top:4px;font-weight:600}
 .chat-page{display:flex;flex-direction:column;height:100%}
 
+/* ── Daily JP sentence ── */
+.jp-sentence{padding:14px 16px;background:linear-gradient(135deg,var(--soft),var(--accent-light));
+  border-radius:16px;margin-bottom:12px;border:1px solid var(--border)}
+.jp-sentence .jp{font-size:16px;font-weight:700;margin-bottom:4px;line-height:1.5}
+.jp-sentence .zh{font-size:13px;color:var(--muted);font-weight:500}
+
 /* ── Sparkle animation ── */
 @keyframes sparkle{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
 .sparkle{animation:sparkle 2s ease-in-out infinite}
@@ -233,6 +277,11 @@ textarea.input{resize:none;min-height:60px}
   100%{transform:translateY(140px) rotate(360deg) translateX(20px);opacity:0}
 }
 .sakura{animation:sakuraFall 4s ease-in infinite}
+
+/* ── Search bar ── */
+.search-bar{position:relative;margin-bottom:12px}
+.search-bar input{padding-left:36px}
+.search-bar::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;z-index:1}
 </style>
 </head>
 <body>
@@ -263,6 +312,9 @@ textarea.input{resize:none;min-height:60px}
   <div class="settings-body" id="settingsBody"></div>
 </div>
 
+<div id="modalRoot"></div>
+<div id="celebrationRoot"></div>
+
 <script>
 // ━━━━━━━━━━ DATA ━━━━━━━━━━
 const store = {
@@ -283,11 +335,13 @@ let apiConfig = store.get('api', {
   sysPrompt:'你是小钰的私人AI助手。你温柔、有趣、记忆力很好。用中文回复，语气亲切自然，可以用颜文字但不要用😏或😂。回复简洁有用。',
 });
 let apiUsage = store.get('apiUsage', {total:{in:0,out:0,reqs:0},daily:{}});
+let celebratedMilestones = store.get('celebrated', []);
 
 function saveDiary(){store.set('diary',diary)} function saveTodos(){store.set('todos',todos)}
 function saveWords(){store.set('vocab',words)} function saveMemories(){store.set('memories',memories)}
 function saveChat(){store.set('chatSessions',chatSessions.map(s=>({...s,msgs:s.msgs.slice(-50)})));store.set('chatSessId',curSessId)} function saveApi(){store.set('api',apiConfig)}
 function saveUsage(){store.set('apiUsage',apiUsage)}
+function saveCelebrated(){store.set('celebrated',celebratedMilestones)}
 function trackUsage(inTok,outTok){
   const today=fmtDate(new Date());
   apiUsage.total.in+=inTok;apiUsage.total.out+=outTok;apiUsage.total.reqs++;
@@ -312,7 +366,7 @@ function toggleDark() {
 function applyDark() {
   document.body.classList.toggle('dark', isDark);
   document.getElementById('dark-btn').textContent = isDark ? '☀️' : '🌙';
-  document.querySelector('meta[name="theme-color"]').content = isDark ? '#1E1A2E' : '#C49A7A';
+  document.querySelector('meta[name="theme-color"]').content = isDark ? '#1E1520' : '#E8A0B4';
 }
 
 // ━━━━━━━━━━ NAV ━━━━━━━━━━
@@ -359,6 +413,45 @@ const ANNIVERSARY=new Date(2026,2,13), JAPAN=new Date(2028,3,1);
 const WD=['日','月','火','水','木','金','土'];
 const escHtml=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 
+// ── Daily Japanese Sentences ──
+const JP_SENTENCES = [
+  {jp:'桜が散っても、また来年咲く。',zh:'樱花凋落了，明年还会再开。',rom:'Sakura ga chittemo, mata rainen saku.'},
+  {jp:'一歩一歩、前に進もう。',zh:'一步一步，向前走吧。',rom:'Ippo ippo, mae ni susumou.'},
+  {jp:'今日も一日、頑張ろう。',zh:'今天也要加油一整天。',rom:'Kyou mo ichinichi, ganbarou.'},
+  {jp:'夢は逃げない、逃げるのは自分だ。',zh:'梦想不会逃跑，逃跑的是自己。',rom:'Yume wa nigenai, nigeru no wa jibun da.'},
+  {jp:'笑顔は最高のアクセサリー。',zh:'笑容是最好的饰品。',rom:'Egao wa saikou no akusesarii.'},
+  {jp:'雨の日も、心は晴れ。',zh:'即使下雨天，心也是晴朗的。',rom:'Ame no hi mo, kokoro wa hare.'},
+  {jp:'自分を信じて、前を向こう。',zh:'相信自己，向前看吧。',rom:'Jibun wo shinjite, mae wo mukou.'},
+  {jp:'小さな幸せを大切にしよう。',zh:'珍惜小小的幸福吧。',rom:'Chiisana shiawase wo taisetsu ni shiyou.'},
+  {jp:'明日は明日の風が吹く。',zh:'明天自有明天的风。',rom:'Ashita wa ashita no kaze ga fuku.'},
+  {jp:'好きなことを続けよう。',zh:'继续做喜欢的事吧。',rom:'Suki na koto wo tsuzukeyou.'},
+  {jp:'どんな時でも、笑顔でいよう。',zh:'无论何时，都保持微笑吧。',rom:'Donna toki demo, egao de iyou.'},
+  {jp:'失敗は成功のもと。',zh:'失败是成功之母。',rom:'Shippai wa seikou no moto.'},
+  {jp:'大切なのは、諦めないこと。',zh:'重要的是，不要放弃。',rom:'Taisetsu na no wa, akiramenai koto.'},
+  {jp:'今この瞬間を楽しもう。',zh:'享受此刻吧。',rom:'Ima kono shunkan wo tanoshimou.'},
+  {jp:'心が疲れたら、少し休もう。',zh:'心累了的话，就稍微休息一下吧。',rom:'Kokoro ga tsukaretara, sukoshi yasumou.'},
+  {jp:'あなたは一人じゃない。',zh:'你不是一个人。',rom:'Anata wa hitori janai.'},
+  {jp:'毎日が新しいスタート。',zh:'每一天都是新的开始。',rom:'Mainichi ga atarashii sutaato.'},
+  {jp:'やればできる。',zh:'只要做就能行。',rom:'Yareba dekiru.'},
+  {jp:'幸せは自分で作るもの。',zh:'幸福是自己创造的。',rom:'Shiawase wa jibun de tsukuru mono.'},
+  {jp:'今日の自分を褒めてあげよう。',zh:'表扬一下今天的自己吧。',rom:'Kyou no jibun wo hometeyageyo.'},
+  {jp:'星は暗い夜にこそ輝く。',zh:'星星在漆黑的夜里才最闪耀。',rom:'Hoshi wa kurai yoru ni koso kagayaku.'},
+  {jp:'優しさは強さだ。',zh:'温柔就是力量。',rom:'Yasashisa wa tsuyosa da.'},
+  {jp:'風が変わるのを待つな、自分が変われ。',zh:'不要等风向改变，自己去改变。',rom:'Kaze ga kawaru no wo matsu na, jibun ga kaware.'},
+  {jp:'美しいものは、いつもそばにある。',zh:'美好的事物，一直在身边。',rom:'Utsukushii mono wa, itsumo soba ni aru.'},
+  {jp:'ゆっくりでもいい、止まらなければ。',zh:'慢一点也没关系，只要不停下来。',rom:'Yukkuri demo ii, tomaranakereba.'},
+  {jp:'泣いた分だけ、強くなれる。',zh:'哭过多少，就能变强多少。',rom:'Naita bun dake, tsuyoku nareru.'},
+  {jp:'自分のペースで歩けばいい。',zh:'按自己的节奏走就好。',rom:'Jibun no peesu de arukeba ii.'},
+  {jp:'未来の自分に会いに行こう。',zh:'去见未来的自己吧。',rom:'Mirai no jibun ni ai ni ikou.'},
+  {jp:'今日できることを、今日やろう。',zh:'今天能做的事，今天就做吧。',rom:'Kyou dekiru koto wo, kyou yarou.'},
+  {jp:'あなたの存在が誰かの光になる。',zh:'你的存在会成为某人的光芒。',rom:'Anata no sonzai ga dareka no hikari ni naru.'},
+  {jp:'深呼吸して、リラックスしよう。',zh:'深呼吸，放松一下吧。',rom:'Shinkokyuu shite, rirakkusu shiyou.'},
+];
+function getDailyJP(){
+  const d=new Date();const idx=(d.getFullYear()*1000+d.getMonth()*100+d.getDate())%JP_SENTENCES.length;
+  return JP_SENTENCES[idx];
+}
+
 // ── SVG Decorations ──
 function heartDeco() {
   return `
@@ -392,6 +485,59 @@ function sakuraDeco() {
   `;
 }
 
+// ━━━━━━━━━━ MILESTONE CELEBRATION ━━━━━━━━━━
+const MILESTONES = [100,200,300,365,400,500,600,700,730,800,900,1000];
+const MILESTONE_MSGS = {
+  100:'一百天啦！每一天都是心动 💕',
+  200:'两百天，爱意加倍 ✨',
+  300:'三百天的陪伴，比蜜糖还甜 🍯',
+  365:'整整一年！我们的故事才刚开始 🎂',
+  400:'四百天，日子像糖果一样甜 🍬',
+  500:'五百天！半千日的温柔 🌸',
+  600:'六百天，比花期还长 🌷',
+  700:'七百天，幸福在延续 💫',
+  730:'两年了！两年的你和我 🎉',
+  800:'八百天，甜蜜翻八倍 🧁',
+  900:'九百天，向千日前进！ 🚀',
+  1000:'一千天！！这才是真正的细水长流 🌊',
+};
+
+function checkMilestone(days){
+  if(!MILESTONES.includes(days))return;
+  if(celebratedMilestones.includes(days))return;
+  celebratedMilestones.push(days);
+  saveCelebrated();
+  showCelebration(days);
+}
+
+function showCelebration(days){
+  const root=document.getElementById('celebrationRoot');
+  const msg=MILESTONE_MSGS[days]||`${days}天纪念日快乐！💕`;
+  
+  // Confetti
+  let confettiHtml='<div class="celebration">';
+  const colors=['#F4ACB7','#D4B8E0','#E8A0B4','#B8E0D0','#FFD700','#FF6B8A','#87CEEB'];
+  for(let i=0;i<60;i++){
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    const l=Math.random()*100;
+    const d=Math.random()*2+1;
+    const dur=Math.random()*2+2;
+    const sz=Math.random()*6+4;
+    confettiHtml+=`<div class="confetti" style="left:${l}%;animation-delay:${d}s;animation-duration:${dur}s;width:${sz}px;height:${sz}px;background:${c};border-radius:${Math.random()>.5?'50%':'2px'}"></div>`;
+  }
+  confettiHtml+='</div>';
+  
+  root.innerHTML=confettiHtml+`
+    <div class="milestone-toast" onclick="this.parentElement.innerHTML=''">
+      <div style="font-size:48px;margin-bottom:8px">🎉</div>
+      <div style="font-size:28px;font-weight:800;color:var(--accent);margin-bottom:6px">${days}天</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);line-height:1.5">${msg}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:12px">点击关闭</div>
+    </div>`;
+  
+  setTimeout(()=>{root.innerHTML=''},8000);
+}
+
 // ━━━━━━━━━━ HOME ━━━━━━━━━━
 function renderHome(el) {
   const now=new Date(), h=now.getHours();
@@ -400,10 +546,18 @@ function renderHome(el) {
   const todayMood=diary.find(d=>d.date===fmtDate(now));
   const doneTodo=todos.filter(t=>t.done).length;
   const pct=todos.length?Math.round(doneTodo/todos.length*100):0;
+  const jp=getDailyJP();
 
   el.innerHTML=`
     <div style="margin-bottom:4px;font-size:24px;font-weight:800">${greet}</div>
-    <div style="color:var(--muted);font-size:13px;margin-bottom:20px;font-weight:600">${fmtDate(now)} · ${WD[now.getDay()]}曜日</div>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:16px;font-weight:600">${fmtDate(now)} · ${WD[now.getDay()]}曜日</div>
+
+    <div class="jp-sentence">
+      <div style="font-size:11px;color:var(--accent);font-weight:700;margin-bottom:6px">📝 今日の一言</div>
+      <div class="jp">${jp.jp}</div>
+      <div class="zh">${jp.zh}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;font-weight:500">${jp.rom}</div>
+    </div>
 
     <div class="card-grid">
       <div class="cd-card cd-love" onclick="navigate('diary')" style="cursor:pointer">
@@ -415,7 +569,7 @@ function renderHome(el) {
       <div class="cd-card cd-japan" onclick="navigate('vocab')" style="cursor:pointer">
         ${sakuraDeco()}
         <div class="cd-tag">✈️ 去日本</div>
-        <div class="cd-days" style="color:var(--sky)">${toJapan}</div>
+        <div class="cd-days" style="color:var(--lavender)">${toJapan}</div>
         <div class="cd-sub">天 · 目标 2028 春</div>
       </div>
     </div>
@@ -456,19 +610,19 @@ function renderHome(el) {
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div class="sec-title" style="margin:0">📊 API 用量监控</div>
-        <button style="background:none;border:none;font-size:11px;color:var(--danger);font-weight:700;cursor:pointer" onclick="if(confirm('清除用量记录？')){apiUsage={total:{in:0,out:0,reqs:0},daily:{}};saveUsage();render()}">重置</button>
+        <button style="background:none;border:none;font-size:11px;color:var(--danger);font-weight:700;cursor:pointer" onclick="event.stopPropagation();if(confirm('清除用量记录？')){apiUsage={total:{in:0,out:0,reqs:0},daily:{}};saveUsage();render()}">重置</button>
       </div>
       ${apiConfig.provider==='none'?'<div style="font-size:13px;color:var(--muted)">还没配置 API，去设置里选一个吧</div>':`
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:10px">
+          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:12px">
             <div style="font-size:20px;font-weight:800;color:var(--accent)">${apiUsage.total.reqs}</div>
             <div style="font-size:10px;color:var(--muted);font-weight:600">总请求</div>
           </div>
-          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:10px">
-            <div style="font-size:20px;font-weight:800;color:var(--sky)">${((apiUsage.total.in+apiUsage.total.out)/1000).toFixed(1)}k</div>
+          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:12px">
+            <div style="font-size:20px;font-weight:800;color:var(--lavender)">${((apiUsage.total.in+apiUsage.total.out)/1000).toFixed(1)}k</div>
             <div style="font-size:10px;color:var(--muted);font-weight:600">总Token</div>
           </div>
-          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:10px">
+          <div style="text-align:center;padding:8px;background:var(--soft);border-radius:12px">
             <div style="font-size:20px;font-weight:800;color:var(--success)">$${estimateCost()}</div>
             <div style="font-size:10px;color:var(--muted);font-weight:600">估算费用</div>
           </div>
@@ -481,16 +635,21 @@ function renderHome(el) {
       `}
     </div>
   `;
+  
+  // Check milestone
+  checkMilestone(together);
 }
 
 // ━━━━━━━━━━ DIARY ━━━━━━━━━━
-let diaryView='write', diaryMood=null;
+let diaryView='write', diaryMood=null, calMonth=new Date().getMonth(), calYear=new Date().getFullYear();
+
 function renderDiary(el) {
   el.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center" class="mb-12">
       <div class="page-title" style="margin:0">📖 心情日记</div>
       <div class="tab-row" style="margin:0">
         <button class="btn btn-sm ${diaryView==='write'?'btn-primary':'btn-secondary'}" onclick="diaryView='write';renderDiary(document.getElementById('content'))">写日记</button>
+        <button class="btn btn-sm ${diaryView==='calendar'?'btn-primary':'btn-secondary'}" onclick="diaryView='calendar';renderDiary(document.getElementById('content'))">日历</button>
         <button class="btn btn-sm ${diaryView==='history'?'btn-primary':'btn-secondary'}" onclick="diaryView='history';renderDiary(document.getElementById('content'))">历史</button>
       </div>
     </div><div id="dc"></div>`;
@@ -502,6 +661,8 @@ function renderDiary(el) {
       <textarea class="input" id="diary-text" placeholder="写点什么吧... ✨" style="margin-bottom:12px"></textarea>
       <button class="btn btn-primary" onclick="submitDiary()" ${diaryMood?'':'disabled'}>💾 保存今日日记</button>
     </div>`;
+  } else if(diaryView==='calendar'){
+    renderCalendar(box);
   } else {
     box.innerHTML=diary.length===0?'<div class="empty">📖 还没有日记，快去写第一篇吧～</div>':
       diary.map((d,i)=>`<div class="card">
@@ -515,6 +676,70 @@ function renderDiary(el) {
       </div>`).join('');
   }
 }
+
+function renderCalendar(box){
+  const now=new Date();
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrevMonth=new Date(calYear,calMonth,0).getDate();
+  const monthNames=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  
+  let daysHtml='';
+  // Previous month days
+  for(let i=firstDay-1;i>=0;i--){
+    daysHtml+=`<div class="cal-day other-month">${daysInPrevMonth-i}</div>`;
+  }
+  // Current month days
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hasDiary=diary.some(e=>e.date===dateStr);
+    const isToday=dateStr===fmtDate(now);
+    const entry=diary.find(e=>e.date===dateStr);
+    daysHtml+=`<div class="cal-day${isToday?' today':''}${hasDiary?' has-diary':''}" 
+      onclick="showDiaryForDate('${dateStr}')" title="${entry?entry.mood+' '+(entry.text||'').slice(0,20):''}">${d}</div>`;
+  }
+  // Next month days
+  const totalCells=firstDay+daysInMonth;
+  const remaining=totalCells%7===0?0:7-totalCells%7;
+  for(let i=1;i<=remaining;i++){
+    daysHtml+=`<div class="cal-day other-month">${i}</div>`;
+  }
+  
+  box.innerHTML=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <button class="btn btn-sm btn-secondary" onclick="calMonth--;if(calMonth<0){calMonth=11;calYear--}renderDiary(document.getElementById('content'))">◀</button>
+      <div style="font-size:16px;font-weight:800">${calYear}年 ${monthNames[calMonth]}</div>
+      <button class="btn btn-sm btn-secondary" onclick="calMonth++;if(calMonth>11){calMonth=0;calYear++}renderDiary(document.getElementById('content'))">▶</button>
+    </div>
+    <div class="cal-grid">
+      ${['日','月','火','水','木','金','土'].map(d=>`<div class="cal-header">${d}</div>`).join('')}
+      ${daysHtml}
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center;font-weight:500">
+      本月写了 ${diary.filter(d=>{const dd=new Date(d.date);return dd.getMonth()===calMonth&&dd.getFullYear()===calYear}).length} 篇日记
+    </div>
+  </div>
+  <div id="calDiaryDetail"></div>`;
+}
+
+function showDiaryForDate(dateStr){
+  const entry=diary.find(d=>d.date===dateStr);
+  const box=document.getElementById('calDiaryDetail');
+  if(!box)return;
+  if(!entry){
+    box.innerHTML=`<div class="card" style="text-align:center"><div style="font-size:13px;color:var(--muted);font-weight:500">${dateStr} 没有日记</div></div>`;
+    return;
+  }
+  box.innerHTML=`<div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:24px">${entry.mood}</span>
+      <span style="font-size:14px;font-weight:700">${MOODS.find(m=>m.emoji===entry.mood)?.label||''}</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:auto;font-weight:600">${entry.date}</span>
+    </div>
+    ${entry.text?`<p style="font-size:14px;line-height:1.6;font-weight:500">${entry.text}</p>`:''}
+  </div>`;
+}
+
 function submitDiary(){
   const t=document.getElementById('diary-text')?.value||'';
   const e={date:fmtDate(new Date()),mood:diaryMood,text:t,ts:Date.now()};
@@ -553,7 +778,7 @@ function removeTodo(id){todos=todos.filter(x=>x.id!==id);saveTodos();renderTodo(
 function clearDone(){todos=todos.filter(t=>!t.done);saveTodos();renderTodo(document.getElementById('content'))}
 
 // ━━━━━━━━━━ VOCAB ━━━━━━━━━━
-let vocabView='list',quizIdx=0,flipped=false;
+let vocabView='list',quizIdx=0,flipped=false,vocabSearch='';
 function renderVocab(el){
   el.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center" class="mb-12">
@@ -565,16 +790,22 @@ function renderVocab(el){
     </div><div id="vc"></div>`;
   const box=document.getElementById('vc');
   if(vocabView==='list'){
-    box.innerHTML=`<div class="card" style="margin-bottom:14px"><div class="row">
-      <input class="input" id="vj" placeholder="日本語" style="flex:1" onkeydown="if(event.key==='Enter')addWord()">
+    const filtered=vocabSearch?words.filter(w=>w.ja.includes(vocabSearch)||w.zh.includes(vocabSearch)):words;
+    box.innerHTML=`<div class="card" style="margin-bottom:10px"><div class="row">
+      <input class="input" id="vj" placeholder="日本語" style="flex:1" onkeydown="if(event.key==='Enter')document.getElementById('vz').focus()">
       <input class="input" id="vz" placeholder="中文" style="flex:1" onkeydown="if(event.key==='Enter')addWord()">
-      <button class="btn btn-primary" onclick="addWord()">＋</button></div></div>
-      <div class="sec-title">共 ${words.length} 个单词</div>
-      ${words.map((w,i)=>`<div class="card" style="padding:0;margin-bottom:8px"><div class="vocab-item">
-        <button class="vocab-star" onclick="toggleStar(${i})">${w.star?'⭐':'☆'}</button>
+      <button class="btn btn-primary" onclick="addWord()">＋</button></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-sm btn-secondary" onclick="showImportModal()">📥 批量导入</button>
+      </div>
+    </div>
+      <div class="search-bar"><input class="input" placeholder="搜索单词..." value="${vocabSearch}" oninput="vocabSearch=this.value;renderVocab(document.getElementById('content'))"></div>
+      <div class="sec-title">共 ${filtered.length} 个单词${vocabSearch?' (搜索中)':''}</div>
+      ${filtered.map((w,i)=>{const ri=words.indexOf(w);return `<div class="card" style="padding:0;margin-bottom:8px"><div class="vocab-item">
+        <button class="vocab-star" onclick="toggleStar(${ri})">${w.star?'⭐':'☆'}</button>
         <div style="flex:1"><span class="vocab-ja">${w.ja}</span><span class="vocab-zh">${w.zh}</span></div>
-        <button class="todo-del" onclick="removeWord(${i})">🗑</button></div></div>`).join('')}
-      ${words.length===0?'<div class="empty">📚 添加一些单词开始学习吧！</div>':''}`;
+        <button class="todo-del" onclick="removeWord(${ri})">🗑</button></div></div>`}).join('')}
+      ${filtered.length===0?`<div class="empty">📚 ${vocabSearch?'没有找到匹配的单词':'添加一些单词开始学习吧！'}</div>`:''}`;
   } else {
     if(!words.length){box.innerHTML='<div class="empty">📚 先去添加一些单词吧～</div>';return}
     const w=words[quizIdx%words.length],total=words.length,cur=(quizIdx%total)+1;
@@ -592,6 +823,43 @@ function renderVocab(el){
 function addWord(){const j=document.getElementById('vj')?.value.trim(),z=document.getElementById('vz')?.value.trim();if(!j||!z)return;words.unshift({ja:j,zh:z,star:false});saveWords();renderVocab(document.getElementById('content'))}
 function toggleStar(i){words[i].star=!words[i].star;saveWords();renderVocab(document.getElementById('content'))}
 function removeWord(i){words.splice(i,1);saveWords();renderVocab(document.getElementById('content'))}
+
+// ── Import Modal ──
+function showImportModal(){
+  document.getElementById('modalRoot').innerHTML=`
+    <div class="modal-overlay" onclick="if(event.target===this)closeImportModal()">
+      <div class="modal">
+        <h3>📥 批量导入单词</h3>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px;font-weight:500;line-height:1.5">
+          每行一个单词，用逗号或Tab分隔日语和中文<br>
+          例：<span style="color:var(--accent)">食べる,吃</span> 或 <span style="color:var(--accent)">飲む	喝</span>
+        </div>
+        <textarea class="input" id="importText" rows="8" placeholder="食べる,吃&#10;飲む,喝&#10;行く,去&#10;来る,来"></textarea>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-secondary" style="flex:1" onclick="closeImportModal()">取消</button>
+          <button class="btn btn-primary" style="flex:1" onclick="doImport()">导入</button>
+        </div>
+      </div>
+    </div>`;
+}
+function closeImportModal(){document.getElementById('modalRoot').innerHTML=''}
+function doImport(){
+  const text=document.getElementById('importText')?.value||'';
+  const lines=text.split('\n').filter(l=>l.trim());
+  let count=0;
+  lines.forEach(line=>{
+    let parts;
+    if(line.includes('\t'))parts=line.split('\t');
+    else if(line.includes(','))parts=line.split(',');
+    else if(line.includes('，'))parts=line.split('，');
+    else return;
+    const ja=(parts[0]||'').trim(), zh=(parts[1]||'').trim();
+    if(ja&&zh){words.unshift({ja,zh,star:false});count++}
+  });
+  saveWords();closeImportModal();
+  if(count>0)alert(`成功导入 ${count} 个单词！`);
+  renderVocab(document.getElementById('content'));
+}
 
 // ━━━━━━━━━━ CHAT ━━━━━━━━━━
 let chatLoading=false, showMemPanel=false;
@@ -764,7 +1032,7 @@ function renderSettings(){
       <div class="setting-label">数据管理</div>
       <button class="btn btn-sm btn-danger" onclick="if(confirm('确定清除所有数据？'))clearAll()" style="margin-top:4px">🗑 清除所有数据</button></div>
     <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px;padding-bottom:16px;font-weight:600">
-      小钰の空間 · made with ♡ by Claude</div>`;
+      小钰の空間 · made with ♡ by 小克</div>`;
 }
 function onProvChange(){
   const p=document.getElementById('sp').value,pr=PROVS[p];
@@ -778,18 +1046,18 @@ function saveSettings(){
   saveApi();toggleSettings();if(currentPage==='chat')renderChat(document.getElementById('content'));
 }
 function addMemS(){const e=document.getElementById('smi');if(!e?.value.trim())return;memories.push(e.value.trim());saveMemories();renderSettings()}
-function clearAll(){diary=[];todos=[];words=[];memories=[];chatSessions=[{id:1,name:'新对话 1',msgs:[],ts:Date.now()}];curSessId=1;apiUsage={total:{in:0,out:0,reqs:0},daily:{}};saveDiary();saveTodos();saveWords();saveMemories();saveChat();saveUsage();toggleSettings();render()}
+function clearAll(){diary=[];todos=[];words=[];memories=[];chatSessions=[{id:1,name:'新对话 1',msgs:[],ts:Date.now()}];curSessId=1;apiUsage={total:{in:0,out:0,reqs:0},daily:{}};celebratedMilestones=[];saveDiary();saveTodos();saveWords();saveMemories();saveChat();saveUsage();saveCelebrated();toggleSettings();render()}
 
 // ━━━━━━━━━━ PWA ━━━━━━━━━━
 function initPWA(){
   const c=document.createElement('canvas');c.width=192;c.height=192;const x=c.getContext('2d');
-  x.fillStyle='#FAF2EB';x.beginPath();x.roundRect(0,0,192,192,40);x.fill();
-  x.fillStyle='#C49A7A';x.beginPath();x.arc(96,78,38,0,Math.PI*2);x.fill();
+  x.fillStyle='#FFF5F5';x.beginPath();x.roundRect(0,0,192,192,40);x.fill();
+  x.fillStyle='#E8A0B4';x.beginPath();x.arc(96,78,38,0,Math.PI*2);x.fill();
   x.fillStyle='#FFF';x.font='34px serif';x.textAlign='center';x.fillText('♡',96,92);
-  x.fillStyle='#C49A7A';x.font='bold 24px Quicksand,sans-serif';x.fillText('小钰',96,152);
+  x.fillStyle='#E8A0B4';x.font='bold 24px Quicksand,sans-serif';x.fillText('小钰',96,152);
   const icon=c.toDataURL('image/png');
   const m={name:'小钰の空間',short_name:'小钰の空間',start_url:'.',display:'standalone',
-    background_color:'#FAF2EB',theme_color:'#C49A7A',icons:[{src:icon,sizes:'192x192',type:'image/png'}]};
+    background_color:'#FFF5F5',theme_color:'#E8A0B4',icons:[{src:icon,sizes:'192x192',type:'image/png'}]};
   const b=new Blob([JSON.stringify(m)],{type:'application/json'});
   document.getElementById('manifest-link').href=URL.createObjectURL(b);
   const l=document.createElement('link');l.rel='apple-touch-icon';l.href=icon;document.head.appendChild(l);
