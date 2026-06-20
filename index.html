@@ -22,6 +22,10 @@
   --float1:#F4ACB7;--float2:#D4B8E0;--float3:#FADDE5;--float4:#B8E0D0;
   --glow:rgba(232,160,180,0.15);
 }
+/* PWA standalone 模式：兜底最少 20px，防止 iOS 键盘后 env() 变 0 */
+@media (display-mode:standalone),(display-mode:fullscreen){
+  :root{--safe-b:max(env(safe-area-inset-bottom,0px),20px)}
+}
 .dark {
   --bg:#1E1520;--bg2:#251A28;--card:#2D2232;--card-shadow:0 2px 16px rgba(0,0,0,0.25);
   --accent:#E8A0B4;--accent-light:#3D2535;--accent-hover:#F0B8C8;
@@ -1213,7 +1217,8 @@ function initKeyboard(){
   // 锁定 safe-area-inset-bottom 的初始值（防止键盘后 iOS 把它变 0）
   const lockSafeArea=()=>{
     const probe=document.createElement('div');
-    probe.style.cssText='position:fixed;bottom:0;left:0;width:1px;height:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none';
+    // absolute + 远离屏幕：避免被键盘 / fixed viewport 影响
+    probe.style.cssText='position:absolute;top:0;left:-9999px;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none;height:0;width:1px';
     document.body.appendChild(probe);
     const sab=parseFloat(getComputedStyle(probe).paddingBottom)||0;
     document.body.removeChild(probe);
@@ -1222,7 +1227,15 @@ function initKeyboard(){
     }
   };
   setTimeout(lockSafeArea,50);
-  setTimeout(lockSafeArea,500); // 二次校准（如果首次测量在键盘还在的状态）
+  setTimeout(lockSafeArea,500);
+  setTimeout(lockSafeArea,1500);
+  // 切回 PWA 时也重新锁定
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden){
+      setTimeout(lockSafeArea,200);
+      setTimeout(lockSafeArea,800);
+    }
+  });
   // 测量 nav 高度并写入 CSS 变量
   const updateNavH=()=>{
     const nav=document.querySelector('.nav');
