@@ -67,8 +67,10 @@ input,textarea{font-family:inherit}
 .header-btn:active{transform:scale(0.9)}
 
 /* ── Main ── */
-.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 16px;-webkit-overflow-scrolling:touch;
-  position:relative;z-index:1}
+.main{flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:0 16px calc(16px + var(--kb-h, 0px));
+  -webkit-overflow-scrolling:touch;position:relative;z-index:1;
+  transition:padding-bottom .2s}
 
 /* ── Page Transition ── */
 .page-enter{animation:pageIn .35s ease both}
@@ -287,9 +289,6 @@ textarea.input{resize:none;min-height:60px}
 /* ── Keyboard open state (iOS) ── */
 body.kb-open .nav{display:none}
 body.kb-open .floats{display:none}
-body.kb-open .header{padding-top:8px;padding-bottom:8px}
-body.kb-open .header h1{font-size:16px}
-body.kb-open .header-btn{width:30px;height:30px;font-size:15px}
 
 /* ── Switch toggle ── */
 .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
@@ -991,9 +990,9 @@ function renderChat(el){
   const a=document.getElementById('ca');if(a)a.scrollTop=a.scrollHeight;
   // 防止 iOS 在 input focus 后把整页滚走
   window.scrollTo(0,0);
-  // 兜底：如果当前没在输入，强制清空键盘状态，防止 body.height 残留
+  // 兜底：如果当前没在输入，强制清空键盘状态
   if(!document.activeElement?.matches('input,textarea')){
-    document.body.style.height='';
+    document.documentElement.style.setProperty('--kb-h','0px');
     document.body.classList.remove('kb-open');
   }
 }
@@ -1049,10 +1048,9 @@ function removeMem(i){memories.splice(i,1);saveMemories();renderChat(document.ge
 
 async function sendChat(){
   const e=document.getElementById('ci');if(!e?.value.trim()||chatLoading)return;
-  // 关键修复：主动让 input 失焦 + 立即清空键盘状态
-  // iOS 上点发送按钮不一定触发 blur 事件，必须手动出手
+  // 关键：主动失焦 + 立即清空键盘状态
   e.blur();
-  document.body.style.height='';
+  document.documentElement.style.setProperty('--kb-h','0px');
   document.body.classList.remove('kb-open');
   const sess=curSess();
   const text=e.value.trim();sess.msgs.push({role:'user',content:text});saveChat();chatLoading=true;
@@ -1208,29 +1206,28 @@ function initPWA(){
 }
 
 // ━━━━━━━━━━ KEYBOARD HANDLING (iOS) ━━━━━━━━━━
+// 策略：完全不动 body 高度，只用 CSS 变量 --kb-h 控制 main 的 padding-bottom
 function initKeyboard(){
   if(!window.visualViewport)return;
   const vv=window.visualViewport;
-  let baseH=vv.height; // 锁定初始高度作为"无键盘"基准
-  // 多次校准基准（确保 layout settled 后拿到正确值）
+  let baseH=vv.height; // 锁定无键盘高度
   setTimeout(()=>{if(vv.height>baseH)baseH=vv.height},100);
   setTimeout(()=>{if(vv.height>baseH)baseH=vv.height},500);
   const isFocused=()=>document.activeElement?.matches('input,textarea');
   // 强制清空键盘状态
   const reset=()=>{
-    document.body.style.height='';
+    document.documentElement.style.setProperty('--kb-h','0px');
     document.body.classList.remove('kb-open');
   };
   const handle=()=>{
-    // 没 focus 时也校准 baseH（自然恢复）
+    // 没 focus 时校准 baseH
     if(vv.height>baseH&&!isFocused())baseH=vv.height;
-    const kbOpen=vv.height < baseH - 100;
-    document.body.classList.toggle('kb-open',kbOpen);
-    if(kbOpen){
-      document.body.style.height=vv.height+'px';
-    } else {
-      document.body.style.height='';
-    }
+    // 没 focus 时一定没键盘
+    if(!isFocused()){reset();window.scrollTo(0,0);return;}
+    // 有 focus 时计算键盘高度
+    const kbH=Math.max(0,baseH-vv.height);
+    document.documentElement.style.setProperty('--kb-h',kbH+'px');
+    document.body.classList.toggle('kb-open',kbH>100);
     window.scrollTo(0,0);
   };
   vv.addEventListener('resize',handle);
@@ -1245,13 +1242,17 @@ function initKeyboard(){
       setTimeout(()=>{window.scrollTo(0,0);handle()},300);
     }
   });
-  // blur 时多重兜底
   document.addEventListener('focusout',()=>{
     reset();
     setTimeout(()=>{reset();window.scrollTo(0,0)},100);
     setTimeout(()=>{reset();handle()},400);
-    setTimeout(()=>{reset();handle()},800);
   });
+  // 终极兜底：每 500ms 自检，没 focus 就清空
+  setInterval(()=>{
+    if(!isFocused()&&document.body.classList.contains('kb-open')){
+      reset();
+    }
+  },500);
 }
 
 // ━━━━━━━━━━ INIT ━━━━━━━━━━
