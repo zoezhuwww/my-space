@@ -33,6 +33,7 @@
   --glow:rgba(232,160,180,0.08);
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);height:100%}
 body{font-family:'Quicksand','Noto Sans SC',sans-serif;background:linear-gradient(160deg,var(--bg),var(--bg2));
   color:var(--text);overflow:hidden;height:100dvh;display:flex;flex-direction:column;transition:background .4s,color .4s}
 button{font-family:inherit;cursor:pointer}
@@ -289,6 +290,33 @@ body.kb-open .floats{display:none}
 body.kb-open .header{padding-top:8px;padding-bottom:8px}
 body.kb-open .header h1{font-size:16px}
 body.kb-open .header-btn{width:30px;height:30px;font-size:15px}
+
+/* ── Switch toggle ── */
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:24px;transition:.3s}
+.slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.switch input:checked + .slider{background:var(--accent)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+
+/* ── Reasoning (CoT) bubble ── */
+.reasoning-box{margin-bottom:4px;background:var(--soft);border-left:3px solid var(--lavender);
+  border-radius:10px;padding:8px 12px;font-size:12px;color:var(--muted);max-width:80%;
+  line-height:1.5;font-weight:500;white-space:pre-wrap;cursor:pointer;transition:all .2s}
+.reasoning-box .rh{font-weight:700;color:var(--lavender);display:flex;align-items:center;gap:4px;
+  justify-content:space-between;font-size:11px}
+.reasoning-box .rc{margin-top:6px;max-height:120px;overflow-y:auto;display:none}
+.reasoning-box.open .rc{display:block}
+.reasoning-box .rh .ra{transition:transform .2s}
+.reasoning-box.open .rh .ra{transform:rotate(90deg)}
+
+/* ── Quick model picker (in chat) ── */
+.model-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;
+  background:var(--soft);border:1px solid var(--border);font-size:11px;font-weight:700;
+  color:var(--accent);cursor:pointer;transition:all .2s;white-space:nowrap}
+.model-pill:active{transform:scale(0.93)}
+.model-pill select{background:none;border:none;font-size:11px;font-weight:700;color:var(--accent);
+  font-family:inherit;cursor:pointer;padding-right:14px}
 </style>
 </head>
 <body>
@@ -338,9 +366,11 @@ let curSessId = store.get('chatSessId', 1);
 function curSess(){return chatSessions.find(s=>s.id===curSessId)||chatSessions[0]}
 let isDark = store.get('dark', false);
 let apiConfig = store.get('api', {
-  provider:'none', url:'', key:'', model:'',
+  provider:'none', url:'', key:'', model:'', showCot:true,
   sysPrompt:'你是小钰的私人AI助手。你温柔、有趣、记忆力很好。用中文回复，语气亲切自然，可以用颜文字但不要用😏或😂。回复简洁有用。',
 });
+// 兼容老数据：补字段
+if(apiConfig.showCot===undefined)apiConfig.showCot=true;
 let apiUsage = store.get('apiUsage', {total:{in:0,out:0,reqs:0},daily:{}});
 let celebratedMilestones = store.get('celebrated', []);
 
@@ -876,6 +906,8 @@ let chatLoading=false, showMemPanel=false;
 function renderChat(el){
   const ok=apiConfig.provider!=='none'&&apiConfig.key&&apiConfig.url;
   const sess=curSess();
+  const pr=PROVS[apiConfig.provider]||PROVS.none;
+  const hasModelList=pr.ms&&pr.ms.length>0;
   el.style.cssText='display:flex;flex-direction:column;min-height:0;overflow:hidden';
   el.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-shrink:0">
@@ -894,8 +926,16 @@ function renderChat(el){
       <button class="sess-add" onclick="newSess()">＋</button>
     </div>
 
-    <!-- Session actions -->
-    <div style="display:flex;gap:4px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap">
+    <!-- Session actions + model picker -->
+    <div style="display:flex;gap:4px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap;align-items:center">
+      ${ok&&hasModelList?`
+        <div class="model-pill">
+          🤖 <select onchange="apiConfig.model=this.value;saveApi();renderChat(document.getElementById('content'))">
+            ${pr.ms.map(m=>`<option value="${m.id}" ${apiConfig.model===m.id?'selected':''}>${m.l}${m.cot?' 💭':''}</option>`).join('')}
+            ${!pr.ms.find(m=>m.id===apiConfig.model)&&apiConfig.model?`<option value="${apiConfig.model}" selected>${apiConfig.model}</option>`:''}
+          </select>
+        </div>
+      `:''}
       <button class="sess-act-btn" onclick="renameSess()">✏️ 重命名</button>
       <button class="sess-act-btn" onclick="compressSess()" ${!ok||sess.msgs.length<4?'disabled style="opacity:.4"':''}>🗜️ 压缩</button>
       <button class="sess-act-btn" onclick="clearSess()">🧹 清空</button>
@@ -916,8 +956,14 @@ function renderChat(el){
       <button class="btn btn-primary" onclick="toggleSettings()">去设置</button></div>`:`
       <div class="chat-area" id="ca">
         ${sess.msgs.length===0?'<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:32px;opacity:.3;margin-bottom:8px">💬</div><div style="font-weight:500">说点什么吧～</div></div>':''}
-        ${sess.msgs.map(m=>`<div class="chat-msg ${m.role}"><div class="chat-bubble${m.compressed?' compressed':''}"${m.compressed?' style="border-left:3px solid var(--lavender);font-size:13px"':''}>${m.compressed?'📋 <b>对话摘要</b><br>':''}${escHtml(m.content)}</div></div>`).join('')}
-        ${chatLoading?'<div class="chat-msg assistant"><div class="chat-bubble" style="color:var(--muted)">思考中 ✦✦✦</div></div>':''}
+        ${sess.msgs.map((m,idx)=>`<div class="chat-msg ${m.role}" style="flex-direction:column;align-items:${m.role==='user'?'flex-end':'flex-start'}">
+          ${m.reasoning?`<div class="reasoning-box" onclick="this.classList.toggle('open')">
+            <div class="rh"><span>💭 思考过程</span><span class="ra">▶</span></div>
+            <div class="rc">${escHtml(m.reasoning)}</div>
+          </div>`:''}
+          <div class="chat-bubble${m.compressed?' compressed':''}"${m.compressed?' style="border-left:3px solid var(--lavender);font-size:13px"':''}>${m.compressed?'📋 <b>对话摘要</b><br>':''}${escHtml(m.content)}</div>
+        </div>`).join('')}
+        ${chatLoading?'<div class="chat-msg assistant"><div class="chat-bubble" style="color:var(--muted)">'+(shouldEnableCoT()?'思考中 💭✦':'思考中 ✦✦✦')+'</div></div>':''}
         <div id="ce"></div>
       </div>
       <div class="chat-input-row">
@@ -985,37 +1031,82 @@ async function sendChat(){
   renderChat(document.getElementById('content'));
   try{
     const sys=apiConfig.sysPrompt+(memories.length?'\n\n以下是你记住的关于小钰的信息：\n'+memories.map((m,i)=>`${i+1}. ${m}`).join('\n'):'');
-    let reply='';
+    const useCot=shouldEnableCoT();
+    let reply='',reasoning='';
     if(apiConfig.provider==='anthropic'){
+      const body={model:apiConfig.model,max_tokens:useCot?4096:1024,system:sys,
+        messages:sess.msgs.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role,content:m.content}))};
+      if(useCot)body.thinking={type:'enabled',budget_tokens:1024};
       const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiConfig.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:apiConfig.model,max_tokens:1024,system:sys,messages:sess.msgs.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role,content:m.content}))})});
-      const d=await r.json();reply=d.content?.map(c=>c.text||'').join('')||d.error?.message||'出错了...';
+        body:JSON.stringify(body)});
+      const d=await r.json();
+      if(d.content){
+        // Claude 返回的 content 是 blocks 数组，可能有 thinking 和 text 类型
+        reasoning=d.content.filter(c=>c.type==='thinking').map(c=>c.thinking||'').join('\n');
+        reply=d.content.filter(c=>c.type==='text').map(c=>c.text||'').join('')||d.error?.message||'出错了...';
+      } else {
+        reply=d.error?.message||'出错了...';
+      }
       if(d.usage)trackUsage(d.usage.input_tokens||0,d.usage.output_tokens||0);
     }else{
       const msgs=[{role:'system',content:sys},...sess.msgs.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role,content:m.content}))];
+      const body={model:apiConfig.model,max_tokens:useCot?4096:1024,messages:msgs};
+      // DeepSeek thinking 模式
+      if(useCot&&apiConfig.provider==='deepseek')body.thinking={type:'enabled'};
       const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiConfig.key}`},
-        body:JSON.stringify({model:apiConfig.model,max_tokens:1024,messages:msgs})});
-      const d=await r.json();reply=d.choices?.[0]?.message?.content||d.error?.message||'出错了...';
+        body:JSON.stringify(body)});
+      const d=await r.json();
+      const msg=d.choices?.[0]?.message;
+      reply=msg?.content||d.error?.message||'出错了...';
+      reasoning=msg?.reasoning_content||'';
       if(d.usage)trackUsage(d.usage.prompt_tokens||0,d.usage.completion_tokens||0);
     }
-    sess.msgs.push({role:'assistant',content:reply});
+    const newMsg={role:'assistant',content:reply};
+    if(reasoning)newMsg.reasoning=reasoning;
+    sess.msgs.push(newMsg);
   }catch(e){sess.msgs.push({role:'assistant',content:'网络出了点问题 (´；ω；`)'});}
   saveChat();chatLoading=false;renderChat(document.getElementById('content'));
 }
 
 // ━━━━━━━━━━ SETTINGS ━━━━━━━━━━
 const PROVS={
-  none:{l:'未配置',u:'',m:''},anthropic:{l:'Anthropic (Claude)',u:'https://api.anthropic.com/v1/messages',m:'claude-sonnet-4-6'},
-  deepseek:{l:'DeepSeek',u:'https://api.deepseek.com/v1/chat/completions',m:'deepseek-chat'},
-  openai:{l:'OpenAI',u:'https://api.openai.com/v1/chat/completions',m:'gpt-4o-mini'},
-  custom:{l:'自定义',u:'',m:''},
+  none:{l:'未配置',u:'',ms:[],cot:'none'},
+  anthropic:{l:'Anthropic',u:'https://api.anthropic.com/v1/messages',cot:'anthropic',ms:[
+    {id:'claude-opus-4-7',l:'Claude Opus 4.7',cot:true},
+    {id:'claude-opus-4-6',l:'Claude Opus 4.6',cot:true},
+    {id:'claude-sonnet-4-6',l:'Claude Sonnet 4.6',cot:true},
+    {id:'claude-haiku-4-5-20251001',l:'Claude Haiku 4.5',cot:false},
+  ]},
+  deepseek:{l:'DeepSeek',u:'https://api.deepseek.com/v1/chat/completions',cot:'deepseek',ms:[
+    {id:'deepseek-v4-flash',l:'V4 Flash (快+便宜)',cot:true},
+    {id:'deepseek-v4-pro',l:'V4 Pro (强)',cot:true},
+    {id:'deepseek-chat',l:'V3.2 Chat (旧)',cot:false},
+    {id:'deepseek-reasoner',l:'V3.2 Reasoner (旧)',cot:true},
+  ]},
+  openai:{l:'OpenAI',u:'https://api.openai.com/v1/chat/completions',cot:'none',ms:[
+    {id:'gpt-4o-mini',l:'GPT-4o mini',cot:false},
+    {id:'gpt-4o',l:'GPT-4o',cot:false},
+    {id:'gpt-4.1-mini',l:'GPT-4.1 mini',cot:false},
+    {id:'gpt-4.1',l:'GPT-4.1',cot:false},
+  ]},
+  custom:{l:'自定义',u:'',ms:[],cot:'none'},
 };
+// 判断当前模型是否支持 CoT
+function modelSupportsCoT(){
+  const p=PROVS[apiConfig.provider];if(!p)return false;
+  if(apiConfig.provider==='custom')return true; // 自定义信任用户
+  const m=p.ms.find(x=>x.id===apiConfig.model);return m?.cot||false;
+}
+// 是否应该在请求中启用 CoT
+function shouldEnableCoT(){return apiConfig.showCot && modelSupportsCoT()}
 function toggleSettings(){
   const p=document.getElementById('settingsPanel'),o=document.getElementById('overlay');
   if(p.classList.contains('show')){p.classList.remove('show');o.classList.remove('show')}
   else{renderSettings();p.classList.add('show');o.classList.add('show')}
 }
 function renderSettings(){
+  const pr=PROVS[apiConfig.provider]||PROVS.none;
+  const hasModelList=pr.ms&&pr.ms.length>0;
   document.getElementById('settingsBody').innerHTML=`
     <div class="setting-group"><div class="setting-label">AI 服务商</div>
       <select class="input" id="sp" onchange="onProvChange()">
@@ -1026,8 +1117,25 @@ function renderSettings(){
         <input class="input" type="password" id="sk" value="${apiConfig.key}" placeholder="sk-..."></div>
       <div class="setting-group"><div class="setting-label">API URL</div>
         <input class="input" id="su" value="${apiConfig.url}" placeholder="https://..."></div>
-      <div class="setting-group"><div class="setting-label">模型名称</div>
-        <input class="input" id="sm" value="${apiConfig.model}" placeholder="model name"></div>
+      <div class="setting-group"><div class="setting-label">模型</div>
+        ${hasModelList?`
+          <select class="input" id="sm" onchange="onModelChange()">
+            ${pr.ms.map(m=>`<option value="${m.id}" ${apiConfig.model===m.id?'selected':''}>${m.l}${m.cot?' 💭':''}</option>`).join('')}
+            ${!pr.ms.find(m=>m.id===apiConfig.model)&&apiConfig.model?`<option value="${apiConfig.model}" selected>${apiConfig.model} (自定义)</option>`:''}
+          </select>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:500">💭 = 支持思考过程</div>
+        `:`<input class="input" id="sm" value="${apiConfig.model}" placeholder="model name">`}
+      </div>
+      <div class="setting-group" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--soft);border-radius:12px">
+        <div>
+          <div style="font-size:13px;font-weight:700">💭 显示思考过程</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:500;margin-top:2px">仅支持的模型有效</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sct" ${apiConfig.showCot?'checked':''} onchange="apiConfig.showCot=this.checked;saveApi()">
+          <span class="slider"></span>
+        </label>
+      </div>
       <div class="setting-group"><div class="setting-label">System Prompt</div>
         <textarea class="input" id="ss" rows="3">${apiConfig.sysPrompt}</textarea></div>
     </div>
@@ -1044,9 +1152,15 @@ function renderSettings(){
     <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px;padding-bottom:16px;font-weight:600">
       小钰の空間 · made with ♡ by 小克</div>`;
 }
+function onModelChange(){
+  apiConfig.model=document.getElementById('sm').value;saveApi();
+}
 function onProvChange(){
   const p=document.getElementById('sp').value,pr=PROVS[p];
-  apiConfig.provider=p;if(pr.u)apiConfig.url=pr.u;if(pr.m)apiConfig.model=pr.m;saveApi();renderSettings();
+  apiConfig.provider=p;
+  if(pr.u)apiConfig.url=pr.u;
+  if(pr.ms&&pr.ms.length)apiConfig.model=pr.ms[0].id;
+  saveApi();renderSettings();
 }
 function saveSettings(){
   apiConfig.provider=document.getElementById('sp').value;
