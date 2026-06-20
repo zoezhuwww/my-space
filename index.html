@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="小钰の空間">
-<meta name="theme-color" content="#E8A0B4">
+<meta name="theme-color" content="#FFF5F5">
 <title>小钰の空間</title>
 <link rel="manifest" id="manifest-link">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -282,6 +282,13 @@ textarea.input{resize:none;min-height:60px}
 .search-bar{position:relative;margin-bottom:12px}
 .search-bar input{padding-left:36px}
 .search-bar::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;z-index:1}
+
+/* ── Keyboard open state (iOS) ── */
+body.kb-open .nav{display:none}
+body.kb-open .floats{display:none}
+body.kb-open .header{padding-top:8px;padding-bottom:8px}
+body.kb-open .header h1{font-size:16px}
+body.kb-open .header-btn{width:30px;height:30px;font-size:15px}
 </style>
 </head>
 <body>
@@ -366,7 +373,7 @@ function toggleDark() {
 function applyDark() {
   document.body.classList.toggle('dark', isDark);
   document.getElementById('dark-btn').textContent = isDark ? '☀️' : '🌙';
-  document.querySelector('meta[name="theme-color"]').content = isDark ? '#1E1520' : '#E8A0B4';
+  document.querySelector('meta[name="theme-color"]').content = isDark ? '#1E1520' : '#FFF5F5';
 }
 
 // ━━━━━━━━━━ NAV ━━━━━━━━━━
@@ -397,6 +404,8 @@ function navigate(id) {
 
 function render() {
   const el = document.getElementById('content');
+  // 清掉上一页（特别是聊天页）留下的 inline style，防止首页布局被污染
+  el.style.cssText = '';
   ({home:renderHome,diary:renderDiary,todo:renderTodo,vocab:renderVocab,chat:renderChat})[currentPage](el);
 }
 
@@ -1057,14 +1066,38 @@ function initPWA(){
   x.fillStyle='#E8A0B4';x.font='bold 24px Quicksand,sans-serif';x.fillText('小钰',96,152);
   const icon=c.toDataURL('image/png');
   const m={name:'小钰の空間',short_name:'小钰の空間',start_url:'.',display:'standalone',
-    background_color:'#FFF5F5',theme_color:'#E8A0B4',icons:[{src:icon,sizes:'192x192',type:'image/png'}]};
+    background_color:'#FFF5F5',theme_color:'#FFF5F5',icons:[{src:icon,sizes:'192x192',type:'image/png'}]};
   const b=new Blob([JSON.stringify(m)],{type:'application/json'});
   document.getElementById('manifest-link').href=URL.createObjectURL(b);
   const l=document.createElement('link');l.rel='apple-touch-icon';l.href=icon;document.head.appendChild(l);
 }
 
+// ━━━━━━━━━━ KEYBOARD HANDLING (iOS) ━━━━━━━━━━
+function initKeyboard(){
+  if(!window.visualViewport)return;
+  const vv=window.visualViewport;
+  let baseHeight=window.innerHeight;
+  const handle=()=>{
+    // 用 visualViewport 高度判断键盘是否弹起
+    const kbOpen=vv.height < baseHeight - 100;
+    document.body.classList.toggle('kb-open',kbOpen);
+    if(kbOpen){
+      document.body.style.height=vv.height+'px';
+    } else {
+      document.body.style.height='';
+      baseHeight=window.innerHeight;
+    }
+  };
+  vv.addEventListener('resize',handle);
+  vv.addEventListener('scroll',handle);
+  // 横屏切换时重置基准高度
+  window.addEventListener('orientationchange',()=>{
+    setTimeout(()=>{baseHeight=window.innerHeight;handle()},300);
+  });
+}
+
 // ━━━━━━━━━━ INIT ━━━━━━━━━━
-applyDark();initPWA();initNav();render();
+applyDark();initPWA();initNav();render();initKeyboard();
 </script>
 </body>
 </html>
