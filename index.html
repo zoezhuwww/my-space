@@ -33,11 +33,9 @@
   --glow:rgba(232,160,180,0.08);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{background:var(--bg);height:100%;overflow:hidden}
+html{background:var(--bg);height:100%}
 body{font-family:'Quicksand','Noto Sans SC',sans-serif;background:linear-gradient(160deg,var(--bg),var(--bg2));
-  color:var(--text);overflow:hidden;
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  display:flex;flex-direction:column;transition:background .4s,color .4s}
+  color:var(--text);overflow:hidden;height:100dvh;display:flex;flex-direction:column;transition:background .4s,color .4s}
 button{font-family:inherit;cursor:pointer}
 input,textarea{font-family:inherit}
 
@@ -1277,6 +1275,11 @@ function initKeyboard(){
     if(e.target.matches('input,textarea')){
       setTimeout(()=>{window.scrollTo(0,0);handle()},50);
       setTimeout(()=>{window.scrollTo(0,0);handle()},300);
+      // 关键：手动 scroll main 让 input 提前出现在可见区，阻止 iOS 自动 scroll viewport
+      setTimeout(()=>{
+        try{e.target.scrollIntoView({block:'center',behavior:'instant'})}catch(_){}
+        window.scrollTo(0,0);
+      },150);
     }
   });
   document.addEventListener('focusout',()=>{
