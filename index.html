@@ -317,6 +317,15 @@ body.kb-open .header-btn{width:30px;height:30px;font-size:15px}
 .model-pill:active{transform:scale(0.93)}
 .model-pill select{background:none;border:none;font-size:11px;font-weight:700;color:var(--accent);
   font-family:inherit;cursor:pointer;padding-right:14px}
+
+/* ── CoT toggle button (in chat) ── */
+.cot-btn{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:700;
+  border:1px solid var(--border);background:var(--card);color:var(--muted);
+  cursor:pointer;transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.cot-btn:active{transform:scale(0.93)}
+.cot-btn.on{background:var(--lavender);color:#fff;border-color:var(--lavender)}
+.cot-btn:disabled{opacity:0.35;cursor:not-allowed}
+.cot-btn:disabled:active{transform:none}
 </style>
 </head>
 <body>
@@ -926,16 +935,25 @@ function renderChat(el){
       <button class="sess-add" onclick="newSess()">＋</button>
     </div>
 
-    <!-- Session actions + model picker -->
-    <div style="display:flex;gap:4px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap;align-items:center">
-      ${ok&&hasModelList?`
-        <div class="model-pill">
-          🤖 <select onchange="apiConfig.model=this.value;saveApi();renderChat(document.getElementById('content'))">
+    <!-- Model + CoT row -->
+    ${ok?`<div style="display:flex;gap:6px;margin-bottom:6px;flex-shrink:0;align-items:center;flex-wrap:wrap">
+      ${hasModelList?`
+        <div class="model-pill" style="flex:1;min-width:0">
+          🤖 <select style="flex:1;min-width:0;text-overflow:ellipsis" onchange="apiConfig.model=this.value;saveApi();renderChat(document.getElementById('content'))">
             ${pr.ms.map(m=>`<option value="${m.id}" ${apiConfig.model===m.id?'selected':''}>${m.l}${m.cot?' 💭':''}</option>`).join('')}
             ${!pr.ms.find(m=>m.id===apiConfig.model)&&apiConfig.model?`<option value="${apiConfig.model}" selected>${apiConfig.model}</option>`:''}
           </select>
         </div>
       `:''}
+      <button class="cot-btn ${apiConfig.showCot?'on':''}" 
+        ${!modelSupportsCoT()?'disabled title="当前模型不支持思考"':''}
+        onclick="apiConfig.showCot=!apiConfig.showCot;saveApi();renderChat(document.getElementById('content'))">
+        💭 ${apiConfig.showCot?'开':'关'}
+      </button>
+    </div>`:''}
+
+    <!-- Session actions -->
+    <div style="display:flex;gap:4px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap">
       <button class="sess-act-btn" onclick="renameSess()">✏️ 重命名</button>
       <button class="sess-act-btn" onclick="compressSess()" ${!ok||sess.msgs.length<4?'disabled style="opacity:.4"':''}>🗜️ 压缩</button>
       <button class="sess-act-btn" onclick="clearSess()">🧹 清空</button>
