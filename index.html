@@ -1210,6 +1210,19 @@ function initPWA(){
 // ━━━━━━━━━━ KEYBOARD HANDLING (iOS) ━━━━━━━━━━
 // 策略：完全不动 body 高度，只用 CSS 变量 --kb-h 控制 main 的 padding-bottom
 function initKeyboard(){
+  // 锁定 safe-area-inset-bottom 的初始值（防止键盘后 iOS 把它变 0）
+  const lockSafeArea=()=>{
+    const probe=document.createElement('div');
+    probe.style.cssText='position:fixed;bottom:0;left:0;width:1px;height:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none';
+    document.body.appendChild(probe);
+    const sab=parseFloat(getComputedStyle(probe).paddingBottom)||0;
+    document.body.removeChild(probe);
+    if(sab>0){
+      document.documentElement.style.setProperty('--safe-b',sab+'px');
+    }
+  };
+  setTimeout(lockSafeArea,50);
+  setTimeout(lockSafeArea,500); // 二次校准（如果首次测量在键盘还在的状态）
   // 测量 nav 高度并写入 CSS 变量
   const updateNavH=()=>{
     const nav=document.querySelector('.nav');
@@ -1219,7 +1232,7 @@ function initKeyboard(){
     }
   };
   setTimeout(updateNavH,100);
-  setTimeout(updateNavH,500);
+  setTimeout(updateNavH,600); // 在 lockSafeArea 之后
   window.addEventListener('resize',updateNavH);
   if(!window.visualViewport)return;
   const vv=window.visualViewport;
