@@ -18,7 +18,7 @@
   --success:#7CAE7A;--danger:#D4726A;--soft:#FEF0F2;
   --pink:#F4ACB7;--lavender:#D4B8E0;--mint:#B8E0D0;--sky:#B8D0E8;
   --nav-bg:rgba(255,245,245,0.88);--nav-border:rgba(240,221,227,0.8);
-  --nav-h:64px;--safe-b:max(env(safe-area-inset-bottom,0px),24px);
+  --nav-h:64px;--safe-b:clamp(24px,env(safe-area-inset-bottom,0px),40px);
   --float1:#F4ACB7;--float2:#D4B8E0;--float3:#FADDE5;--float4:#B8E0D0;
   --glow:rgba(232,160,180,0.15);
 }
@@ -1218,8 +1218,8 @@ function initKeyboard(){
     const sab=parseFloat(getComputedStyle(probe).paddingBottom)||0;
     document.body.removeChild(probe);
     if(sab>0){
-      // 至少 24px 兜底，跟 CSS 一致
-      document.documentElement.style.setProperty('--safe-b',Math.max(sab,24)+'px');
+      // 限制在 24-40px 范围，防止 iOS 把键盘高度算进来
+      document.documentElement.style.setProperty('--safe-b',Math.min(Math.max(sab,24),40)+'px');
     }
   };
   setTimeout(lockSafeArea,50);
