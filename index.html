@@ -991,6 +991,11 @@ function renderChat(el){
   const a=document.getElementById('ca');if(a)a.scrollTop=a.scrollHeight;
   // 防止 iOS 在 input focus 后把整页滚走
   window.scrollTo(0,0);
+  // 兜底：如果当前没在输入，强制清空键盘状态，防止 body.height 残留
+  if(!document.activeElement?.matches('input,textarea')){
+    document.body.style.height='';
+    document.body.classList.remove('kb-open');
+  }
 }
 
 // Session management
@@ -1201,47 +1206,49 @@ function initPWA(){
 function initKeyboard(){
   if(!window.visualViewport)return;
   const vv=window.visualViewport;
-  let maxH=vv.height; // 记录最大见到的高度作为"完整 viewport"基准
+  const isFocused=()=>document.activeElement?.matches('input,textarea');
+  // 强制清空键盘状态
+  const reset=()=>{
+    document.body.style.height='';
+    document.body.classList.remove('kb-open');
+  };
   const handle=()=>{
-    // 总是更新最大高度（自然校准）
-    if(vv.height>maxH)maxH=vv.height;
-    // 当前高度 < 最大高度 - 100px → 键盘弹起
-    const kbOpen=vv.height < maxH - 100;
-    document.body.classList.toggle('kb-open',kbOpen);
-    if(kbOpen){
-      document.body.style.height=vv.height+'px';
+    if(isFocused()){
+      // 有输入框 focus，看 viewport 高度差判断键盘是否弹起
+      const fullH=Math.max(window.innerHeight,vv.height);
+      const kbOpen=vv.height < fullH - 100;
+      document.body.classList.toggle('kb-open',kbOpen);
+      if(kbOpen){
+        document.body.style.height=vv.height+'px';
+      } else {
+        document.body.style.height='';
+      }
     } else {
-      document.body.style.height='';
+      // 没有 focus = 一定没键盘 = 强制清空
+      reset();
     }
-    // 强制重置 viewport scroll，防止 iOS 把整页推走
     window.scrollTo(0,0);
   };
   vv.addEventListener('resize',handle);
   vv.addEventListener('scroll',handle);
-  // 横屏切换时重置基准高度
-  window.addEventListener('orientationchange',()=>{
-    setTimeout(()=>{maxH=vv.height;handle()},300);
-  });
-  // 切走再切回 PWA 时，如果焦点不在输入框，重置基准
+  // 横屏切换
+  window.addEventListener('orientationchange',()=>{setTimeout(handle,300)});
+  // 切走切回 PWA
   document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden){
-      setTimeout(()=>{
-        if(!document.activeElement?.matches('input,textarea'))maxH=vv.height;
-        handle();
-      },100);
-    }
+    if(!document.hidden)setTimeout(handle,100);
   });
-  // 监听所有 input/textarea focus，强制重置 scroll
+  // input focus 时多次校准，应对 iOS 自动 scroll
   document.addEventListener('focusin',e=>{
     if(e.target.matches('input,textarea')){
-      setTimeout(()=>window.scrollTo(0,0),50);
-      setTimeout(()=>window.scrollTo(0,0),300);
+      setTimeout(()=>{window.scrollTo(0,0);handle()},50);
+      setTimeout(()=>{window.scrollTo(0,0);handle()},300);
     }
   });
+  // blur 时立即并多次强制清空兜底
   document.addEventListener('focusout',()=>{
-    setTimeout(()=>window.scrollTo(0,0),50);
-    // blur 后再校准一次基准
-    setTimeout(()=>{maxH=Math.max(maxH,vv.height);handle()},400);
+    reset();
+    setTimeout(()=>{reset();window.scrollTo(0,0)},100);
+    setTimeout(handle,400);
   });
 }
 
