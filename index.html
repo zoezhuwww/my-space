@@ -1069,8 +1069,10 @@ async function sendChat(){
     }else{
       const msgs=[{role:'system',content:sys},...sess.msgs.filter(m=>m.role!=='system').slice(-20).map(m=>({role:m.role,content:m.content}))];
       const body={model:apiConfig.model,max_tokens:useCot?4096:1024,messages:msgs};
-      // DeepSeek thinking 模式
-      if(useCot&&apiConfig.provider==='deepseek')body.thinking={type:'enabled'};
+      // DeepSeek thinking 模式：V4 默认开启，必须显式 enabled/disabled
+      if(apiConfig.provider==='deepseek'&&modelSupportsCoT()){
+        body.thinking={type:useCot?'enabled':'disabled'};
+      }
       const r=await fetch(apiConfig.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiConfig.key}`},
         body:JSON.stringify(body)});
       const d=await r.json();
@@ -1141,18 +1143,8 @@ function renderSettings(){
             ${pr.ms.map(m=>`<option value="${m.id}" ${apiConfig.model===m.id?'selected':''}>${m.l}${m.cot?' 💭':''}</option>`).join('')}
             ${!pr.ms.find(m=>m.id===apiConfig.model)&&apiConfig.model?`<option value="${apiConfig.model}" selected>${apiConfig.model} (自定义)</option>`:''}
           </select>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:500">💭 = 支持思考过程</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;font-weight:500">💭 = 支持思考过程 · 思考开关在聊天页右上角</div>
         `:`<input class="input" id="sm" value="${apiConfig.model}" placeholder="model name">`}
-      </div>
-      <div class="setting-group" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--soft);border-radius:12px">
-        <div>
-          <div style="font-size:13px;font-weight:700">💭 显示思考过程</div>
-          <div style="font-size:11px;color:var(--muted);font-weight:500;margin-top:2px">仅支持的模型有效</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="sct" ${apiConfig.showCot?'checked':''} onchange="apiConfig.showCot=this.checked;saveApi()">
-          <span class="slider"></span>
-        </label>
       </div>
       <div class="setting-group"><div class="setting-label">System Prompt</div>
         <textarea class="input" id="ss" rows="3">${apiConfig.sysPrompt}</textarea></div>
@@ -1209,16 +1201,17 @@ function initPWA(){
 function initKeyboard(){
   if(!window.visualViewport)return;
   const vv=window.visualViewport;
-  let baseHeight=window.innerHeight;
+  let maxH=vv.height; // 记录最大见到的高度作为"完整 viewport"基准
   const handle=()=>{
-    // 用 visualViewport 高度判断键盘是否弹起
-    const kbOpen=vv.height < baseHeight - 100;
+    // 总是更新最大高度（自然校准）
+    if(vv.height>maxH)maxH=vv.height;
+    // 当前高度 < 最大高度 - 100px → 键盘弹起
+    const kbOpen=vv.height < maxH - 100;
     document.body.classList.toggle('kb-open',kbOpen);
     if(kbOpen){
       document.body.style.height=vv.height+'px';
     } else {
       document.body.style.height='';
-      baseHeight=window.innerHeight;
     }
     // 强制重置 viewport scroll，防止 iOS 把整页推走
     window.scrollTo(0,0);
@@ -1227,7 +1220,16 @@ function initKeyboard(){
   vv.addEventListener('scroll',handle);
   // 横屏切换时重置基准高度
   window.addEventListener('orientationchange',()=>{
-    setTimeout(()=>{baseHeight=window.innerHeight;handle()},300);
+    setTimeout(()=>{maxH=vv.height;handle()},300);
+  });
+  // 切走再切回 PWA 时，如果焦点不在输入框，重置基准
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden){
+      setTimeout(()=>{
+        if(!document.activeElement?.matches('input,textarea'))maxH=vv.height;
+        handle();
+      },100);
+    }
   });
   // 监听所有 input/textarea focus，强制重置 scroll
   document.addEventListener('focusin',e=>{
@@ -1238,6 +1240,8 @@ function initKeyboard(){
   });
   document.addEventListener('focusout',()=>{
     setTimeout(()=>window.scrollTo(0,0),50);
+    // blur 后再校准一次基准
+    setTimeout(()=>{maxH=Math.max(maxH,vv.height);handle()},400);
   });
 }
 
