@@ -876,7 +876,7 @@ let chatLoading=false, showMemPanel=false;
 function renderChat(el){
   const ok=apiConfig.provider!=='none'&&apiConfig.key&&apiConfig.url;
   const sess=curSess();
-  el.style.cssText='display:flex;flex-direction:column;height:100%';
+  el.style.cssText='display:flex;flex-direction:column;min-height:0;overflow:hidden';
   el.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-shrink:0">
       <div class="page-title" style="margin:0">💬 AI 聊天</div>
@@ -925,7 +925,8 @@ function renderChat(el){
         <button class="btn btn-primary" onclick="sendChat()" ${chatLoading?'disabled':''}>➤</button>
       </div>`}`;
   const a=document.getElementById('ca');if(a)a.scrollTop=a.scrollHeight;
-  if(currentPage!=='chat')el.style.cssText='';
+  // 防止 iOS 在 input focus 后把整页滚走
+  window.scrollTo(0,0);
 }
 
 // Session management
@@ -1087,12 +1088,24 @@ function initKeyboard(){
       document.body.style.height='';
       baseHeight=window.innerHeight;
     }
+    // 强制重置 viewport scroll，防止 iOS 把整页推走
+    window.scrollTo(0,0);
   };
   vv.addEventListener('resize',handle);
   vv.addEventListener('scroll',handle);
   // 横屏切换时重置基准高度
   window.addEventListener('orientationchange',()=>{
     setTimeout(()=>{baseHeight=window.innerHeight;handle()},300);
+  });
+  // 监听所有 input/textarea focus，强制重置 scroll
+  document.addEventListener('focusin',e=>{
+    if(e.target.matches('input,textarea')){
+      setTimeout(()=>window.scrollTo(0,0),50);
+      setTimeout(()=>window.scrollTo(0,0),300);
+    }
+  });
+  document.addEventListener('focusout',()=>{
+    setTimeout(()=>window.scrollTo(0,0),50);
   });
 }
 
