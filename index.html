@@ -68,9 +68,11 @@ input,textarea{font-family:inherit}
 
 /* ── Main ── */
 .main{flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:0 16px calc(16px + var(--kb-h, 0px));
+  padding:0 16px calc(var(--nav-h, 70px) + 16px + var(--kb-h, 0px));
   -webkit-overflow-scrolling:touch;position:relative;z-index:1;
   transition:padding-bottom .2s}
+/* 键盘弹起时 nav 隐藏，padding-bottom 不需要给 nav 留空间 */
+body.kb-open .main{padding-bottom:calc(16px + var(--kb-h, 0px))}
 
 /* ── Page Transition ── */
 .page-enter{animation:pageIn .35s ease both}
@@ -81,8 +83,8 @@ input,textarea{font-family:inherit}
 
 /* ── Bottom Nav ── */
 .nav{display:flex;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--nav-border);flex-shrink:0;padding-bottom:var(--safe-b);
-  position:relative;z-index:10}
+  border-top:1px solid var(--nav-border);padding-bottom:var(--safe-b);
+  position:fixed;left:0;right:0;bottom:0;z-index:10}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;
   background:none;border:none;font-size:10px;color:var(--muted);transition:all .25s;font-weight:600}
 .nav-btn.active{color:var(--accent)}
@@ -1208,6 +1210,17 @@ function initPWA(){
 // ━━━━━━━━━━ KEYBOARD HANDLING (iOS) ━━━━━━━━━━
 // 策略：完全不动 body 高度，只用 CSS 变量 --kb-h 控制 main 的 padding-bottom
 function initKeyboard(){
+  // 测量 nav 高度并写入 CSS 变量
+  const updateNavH=()=>{
+    const nav=document.querySelector('.nav');
+    if(nav){
+      const h=nav.offsetHeight;
+      if(h>0)document.documentElement.style.setProperty('--nav-h',h+'px');
+    }
+  };
+  setTimeout(updateNavH,100);
+  setTimeout(updateNavH,500);
+  window.addEventListener('resize',updateNavH);
   if(!window.visualViewport)return;
   const vv=window.visualViewport;
   let baseH=vv.height; // 锁定无键盘高度
