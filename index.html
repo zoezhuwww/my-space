@@ -18,13 +18,9 @@
   --success:#7CAE7A;--danger:#D4726A;--soft:#FEF0F2;
   --pink:#F4ACB7;--lavender:#D4B8E0;--mint:#B8E0D0;--sky:#B8D0E8;
   --nav-bg:rgba(255,245,245,0.88);--nav-border:rgba(240,221,227,0.8);
-  --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
+  --nav-h:64px;--safe-b:max(env(safe-area-inset-bottom,0px),24px);
   --float1:#F4ACB7;--float2:#D4B8E0;--float3:#FADDE5;--float4:#B8E0D0;
   --glow:rgba(232,160,180,0.15);
-}
-/* PWA standalone 模式：兜底最少 20px，防止 iOS 键盘后 env() 变 0 */
-@media (display-mode:standalone),(display-mode:fullscreen){
-  :root{--safe-b:max(env(safe-area-inset-bottom,0px),20px)}
 }
 .dark {
   --bg:#1E1520;--bg2:#251A28;--card:#2D2232;--card-shadow:0 2px 16px rgba(0,0,0,0.25);
@@ -1223,7 +1219,8 @@ function initKeyboard(){
     const sab=parseFloat(getComputedStyle(probe).paddingBottom)||0;
     document.body.removeChild(probe);
     if(sab>0){
-      document.documentElement.style.setProperty('--safe-b',sab+'px');
+      // 至少 24px 兜底，跟 CSS 一致
+      document.documentElement.style.setProperty('--safe-b',Math.max(sab,24)+'px');
     }
   };
   setTimeout(lockSafeArea,50);
